@@ -97,6 +97,210 @@ If `result` represents a failure, accessing `Value` throws an `InvalidOperationE
 
 This prevents accidentally using a value from a failed operation.
 
+## Match
+
+`Match` provides a concise way to handle both successful and failed results.
+
+Instead of manually checking `IsSuccess` or `IsFailure`, two functions can be provided:
+
+- `onSuccess` is executed when the result is successful.
+- `onFailure` is executed when the result has failed.
+
+Example:
+
+```csharp
+var result = Result<string>.Success("Product");
+
+var output = result.Match(
+    onSuccess: value => $"Success: {value}",
+    onFailure: errors => "Failed");
+```
+
+The result is:
+
+```text
+Success: Product
+```
+
+For a failed result:
+
+```csharp
+var result = Result<string>.Failure(
+    Error.NotFound(
+        "Product.NotFound",
+        "Product was not found."));
+
+var output = result.Match(
+    onSuccess: value => $"Success: {value}",
+    onFailure: errors => $"Failed: {errors[0].Code}");
+```
+
+The result is:
+
+```text
+Failed: Product.NotFound
+```
+
+`Match` returns the value produced by the selected function.
+
+Both functions must return the same result type.
+
+For example:
+
+```csharp
+string text = result.Match(
+    onSuccess: value => value,
+    onFailure: errors => errors[0].Message);
+```
+
+Passing `null` as either function is not allowed and throws an `ArgumentNullException`.
+
+
+## Map
+
+`Map` transforms the value of a successful `Result<T>` into another value while preserving failures.
+
+Conceptually:
+
+```text
+Result<T>
+   |
+   | Map(T -> TNewValue)
+   v
+Result<TNewValue>
+```
+
+If the result is successful, the mapper function is executed.
+
+Example:
+
+```csharp
+var result = Result<string>.Success("Product");
+
+var mapped = result.Map(
+    value => value.Length);
+```
+
+The result is:
+
+```text
+Result<int>
+IsSuccess = true
+Value = 7
+```
+
+`Map` is especially useful when converting one successful value into another type.
+
+For example:
+
+```csharp
+Result<Product> result = GetProduct();
+
+var dtoResult = result.Map(product =>
+    new ProductDto
+    {
+        Id = product.Id,
+        Name = product.Name
+    });
+```
+
+This transforms:
+
+```text
+Result<Product>
+```
+
+into:
+
+```text
+Result<ProductDto>
+```
+
+If the original result is a failure, the mapper is not executed and the existing errors are preserved.
+
+```csharp
+var result = Result<string>.Failure(
+    Error.NotFound(
+        "Product.NotFound",
+        "Product was not found."));
+
+var mapped = result.Map(
+    value => value.Length);
+```
+
+The resulting `Result<int>` remains a failure and contains the same errors.
+
+Passing a `null` mapper is not allowed and throws an `ArgumentNullException`.
+
+## Bind
+
+`Bind` chains a successful `Result<T>` to another operation that itself returns a `Result`.
+
+Conceptually:
+
+```text
+Result<T>
+   |
+   | Bind(T -> Result<TNewValue>)
+   v
+Result<TNewValue>
+```
+
+Unlike `Map`, which transforms a value directly, `Bind` is used when the next operation can also succeed or fail.
+
+Example:
+
+```csharp
+Result<User> userResult = GetUser(userId);
+
+Result<Order> orderResult = userResult.Bind(
+    user => CreateOrder(user));
+```
+
+If `userResult` is successful, `CreateOrder` is executed with the returned user.
+
+```text
+GetUser()
+   ↓
+Success<User>
+   ↓
+CreateOrder(user)
+   ↓
+Result<Order>
+```
+
+If `userResult` has failed, `CreateOrder` is not executed and the existing errors are preserved.
+
+```text
+GetUser()
+   ↓
+Failure<User>
+   ↓
+CreateOrder is skipped
+   ↓
+Failure<Order>
+```
+
+This avoids manually checking the result between operations:
+
+```csharp
+if (userResult.IsFailure)
+{
+    return Result<Order>.Failure(userResult.Errors);
+}
+
+return CreateOrder(userResult.Value);
+```
+
+The same operation can instead be written as:
+
+```csharp
+return userResult.Bind(
+    user => CreateOrder(user));
+```
+
+Passing a `null` binder is not allowed and throws an `ArgumentNullException`.
+
 ## Complete Example
 
 ```csharp

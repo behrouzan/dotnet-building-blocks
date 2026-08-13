@@ -52,8 +52,13 @@ public sealed class Result<T> : Result
     /// <returns>
     /// A successful <see cref="Result{T}"/>.
     /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="value"/> is <see langword="null"/>.
+    /// </exception>
     public static Result<T> Success(T value)
     {
+        ArgumentNullException.ThrowIfNull(value);
+
         return new Result<T>(
             value,
             true);
@@ -126,5 +131,92 @@ public sealed class Result<T> : Result
         params Error[] errors)
     {
         return Failure((IEnumerable<Error>)errors);
+    }
+
+
+    /// <summary>
+    /// Executes one of the provided functions depending on whether the result
+    /// is successful or failed.
+    /// </summary>
+    /// <typeparam name="TResult">
+    /// The type returned by the selected function.
+    /// </typeparam>
+    /// <param name="onSuccess">
+    /// The function executed when the result is successful.
+    /// </param>
+    /// <param name="onFailure">
+    /// The function executed when the result is failed.
+    /// </param>
+    /// <returns>
+    /// The value returned by either <paramref name="onSuccess"/>
+    /// or <paramref name="onFailure"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="onSuccess"/> or
+    /// <paramref name="onFailure"/> is <see langword="null"/>.
+    /// </exception>
+    public TResult Match<TResult>(
+        Func<T, TResult> onSuccess,
+        Func<IReadOnlyList<Error>, TResult> onFailure)
+    {
+        ArgumentNullException.ThrowIfNull(onSuccess);
+        ArgumentNullException.ThrowIfNull(onFailure);
+
+        return IsSuccess
+            ? onSuccess(Value)
+            : onFailure(Errors);
+    }
+
+
+    /// <summary>
+    /// Transforms the value of a successful result into a new value.
+    /// </summary>
+    /// <typeparam name="TNewValue">
+    /// The type of the transformed value.
+    /// </typeparam>
+    /// <param name="mapper">
+    /// The function used to transform the successful value.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Result{TNewValue}"/> containing the transformed value
+    /// when successful, or the existing errors when failed.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="mapper"/> is <see langword="null"/>.
+    /// </exception>
+    public Result<TNewValue> Map<TNewValue>(
+        Func<T, TNewValue> mapper)
+    {
+        ArgumentNullException.ThrowIfNull(mapper);
+
+        return IsSuccess
+            ? Result<TNewValue>.Success(mapper(Value))
+            : Result<TNewValue>.Failure(Errors);
+    }
+
+    /// <summary>
+    /// Chains the current successful result to another operation that returns a result.
+    /// </summary>
+    /// <typeparam name="TNewValue">
+    /// The type of value returned by the next operation.
+    /// </typeparam>
+    /// <param name="binder">
+    /// The function executed when the current result is successful.
+    /// </param>
+    /// <returns>
+    /// The result returned by <paramref name="binder"/> when the current result is successful;
+    /// otherwise, a failed <see cref="Result{TNewValue}"/> containing the existing errors.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="binder"/> is <see langword="null"/>.
+    /// </exception>
+    public Result<TNewValue> Bind<TNewValue>(
+        Func<T, Result<TNewValue>> binder)
+    {
+        ArgumentNullException.ThrowIfNull(binder);
+
+        return IsSuccess
+            ? binder(Value)
+            : Result<TNewValue>.Failure(Errors);
     }
 }

@@ -20,12 +20,22 @@ public class Result
     /// Thrown when a successful result contains errors,
     /// or when a failed result contains no errors.
     /// </exception>
+    /// /// <exception cref="ArgumentException">
+    /// Thrown when the error collection contains a null value.
+    /// </exception>
     protected Result(
         bool isSuccess,
         IEnumerable<Error>? errors = null)
     {
+        //_errors = errors?.ToArray() ?? [];
         _errors = errors?.ToArray() ?? [];
 
+        if (_errors.Any(error => error is null))
+        {
+            throw new ArgumentException(
+                "The error collection cannot contain null values.",
+                nameof(errors));
+        }
         if (isSuccess && _errors.Length > 0)
         {
             throw new InvalidOperationException(
@@ -141,4 +151,33 @@ public class Result
     public static Result Failure(
         params Error[] errors) =>
         Failure((IEnumerable<Error>)errors);
+
+
+    /// <summary>
+    /// Combines multiple results into a single result.
+    /// </summary>
+    /// <param name="results">
+    /// The results to combine.
+    /// </param>
+    /// <returns>
+    /// A successful result if all results are successful;
+    /// otherwise, a failed result containing all errors from the failed results.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="results"/> is <see langword="null"/>.
+    /// </exception>
+    public static Result Combine(
+        params Result[] results)
+    {
+        ArgumentNullException.ThrowIfNull(results);
+
+        var errors = results
+            .Where(result => result.IsFailure)
+            .SelectMany(result => result.Errors)
+            .ToArray();
+
+        return errors.Length == 0
+            ? Success()
+            : Failure(errors);
+    }
 }

@@ -171,6 +171,74 @@ PublishArticle
 
 `Result` is primarily intended for expected application failures.
 
+## Combining Results
+
+Multiple results can be combined into a single result using `Result.Combine`.
+
+If all results are successful, the combined result is successful.
+
+```csharp
+var result1 = Result.Success();
+var result2 = Result.Success();
+
+var combined = Result.Combine(
+    result1,
+    result2);
+```
+
+The combined result has:
+
+```text
+IsSuccess = true
+Errors = empty
+```
+
+If one or more results fail, all errors from the failed results are collected into the combined result.
+
+```csharp
+var emailResult = Result.Failure(
+    Error.Validation(
+        "User.Email.Invalid",
+        "Email is invalid.",
+        "email"));
+
+var passwordResult = Result.Failure(
+    Error.Validation(
+        "User.Password.TooShort",
+        "Password is too short.",
+        "password"));
+
+var nameResult = Result.Success();
+
+var combined = Result.Combine(
+    emailResult,
+    passwordResult,
+    nameResult);
+```
+
+The combined result is a failure containing both errors.
+
+```text
+combined.IsFailure = true
+
+combined.Errors
+├── User.Email.Invalid
+└── User.Password.TooShort
+```
+
+This is useful when multiple independent validations or operations need to be evaluated and all failures should be returned together.
+
+### Combining No Results
+
+Calling:
+
+```csharp
+var result = Result.Combine();
+```
+
+returns a successful result because there are no failed results to combine.
+
+
 Examples:
 
 ```text

@@ -127,4 +127,20 @@ public class ErrorTests
         Assert.Equal(original.Type, modified.Type);
         Assert.Equal(original.PropertyPath, modified.PropertyPath);
     }
+
+    [Fact]
+    public void WithMetadata_WithExistingKey_ShouldReplaceValue()
+    {
+        var error = Error
+            .Validation(
+                "Product.Quantity.Invalid",
+                "Quantity is invalid.",
+                "quantity")
+            .WithMetadata("minimum", 1);
+
+        var modified = error.WithMetadata("minimum", 5);
+
+        Assert.Equal(1, error.Metadata["minimum"]);
+        Assert.Equal(5, modified.Metadata["minimum"]);
+    }
 }

@@ -59,4 +59,81 @@ public class ResultTests
         Assert.Throws<InvalidOperationException>(() =>
             Result.Failure(errors));
     }
+
+    [Fact]
+    public void Failure_WithNullErrorInsideCollection_ShouldThrow()
+    {
+        var errors = new Error?[]
+        {
+            Error.Validation(
+                "User.Email.Invalid",
+                "Email is invalid.",
+                "email"),
+
+            null
+        };
+
+        Assert.Throws<ArgumentException>(() =>
+            Result.Failure(errors!));
+    }
+
+    [Fact]
+    public void Combine_WhenAllResultsAreSuccessful_ShouldReturnSuccess()
+    {
+        var result1 = Result.Success();
+        var result2 = Result.Success();
+        var result3 = Result.Success();
+
+        var combined = Result.Combine(
+            result1,
+            result2,
+            result3);
+
+        Assert.True(combined.IsSuccess);
+        Assert.Empty(combined.Errors);
+    }
+
+    [Fact]
+    public void Combine_WhenSomeResultsFail_ShouldReturnAllErrors()
+    {
+        var error1 = Error.Validation(
+            "User.Email.Invalid",
+            "Email is invalid.",
+            "email");
+
+        var error2 = Error.Validation(
+            "User.Password.TooShort",
+            "Password is too short.",
+            "password");
+
+        var error3 = Error.Conflict(
+            "User.Email.AlreadyExists",
+            "Email already exists.",
+            "email");
+
+        var result1 = Result.Failure(error1, error2);
+        var result2 = Result.Success();
+        var result3 = Result.Failure(error3);
+
+        var combined = Result.Combine(
+            result1,
+            result2,
+            result3);
+
+        Assert.True(combined.IsFailure);
+        Assert.Equal(3, combined.Errors.Count);
+
+        Assert.Equal(error1, combined.Errors[0]);
+        Assert.Equal(error2, combined.Errors[1]);
+        Assert.Equal(error3, combined.Errors[2]);
+    }
+
+    [Fact]
+    public void Combine_WithNoResults_ShouldReturnSuccess()
+    {
+        var combined = Result.Combine();
+
+        Assert.True(combined.IsSuccess);
+        Assert.Empty(combined.Errors);
+    }
 }
