@@ -15,6 +15,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{010ADFB1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Behzad.BuildingBlocks.Core.Tests", "tests\Behzad.BuildingBlocks.Core.Tests\Behzad.BuildingBlocks.Core.Tests.csproj", "{6E46CB5A-B4B2-4744-B277-9FFC0209A1B1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Behzad.BuildingBlocks.AspNetCore", "src\Behzad.BuildingBlocks.AspNetCore\Behzad.BuildingBlocks.AspNetCore.csproj", "{48128A51-467D-485F-9A58-528D800B9434}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Behzad.BuildingBlocks.AspNetCore.Tests", "tests\Behzad.BuildingBlocks.AspNetCore.Tests\Behzad.BuildingBlocks.AspNetCore.Tests.csproj", "{5FD971D5-ED21-4DC2-80C8-01BCB65381EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,10 +40,20 @@ Global
 		{6E46CB5A-B4B2-4744-B277-9FFC0209A1B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E46CB5A-B4B2-4744-B277-9FFC0209A1B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E46CB5A-B4B2-4744-B277-9FFC0209A1B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48128A51-467D-485F-9A58-528D800B9434}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48128A51-467D-485F-9A58-528D800B9434}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48128A51-467D-485F-9A58-528D800B9434}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48128A51-467D-485F-9A58-528D800B9434}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FD971D5-ED21-4DC2-80C8-01BCB65381EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FD971D5-ED21-4DC2-80C8-01BCB65381EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FD971D5-ED21-4DC2-80C8-01BCB65381EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FD971D5-ED21-4DC2-80C8-01BCB65381EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A879E8D8-F599-45D4-B54C-DA1B8B2CAB0D} = {383196A2-6B3A-44F8-A11E-8E440E2029F8}
 		{F3DDE77D-3B4D-42E8-8991-49CACB9889C1} = {2E8DBE75-2DD1-414C-ADD9-E70BB8D517A7}
 		{6E46CB5A-B4B2-4744-B277-9FFC0209A1B1} = {010ADFB1-B563-49D8-9711-D6A0D6086348}
+		{48128A51-467D-485F-9A58-528D800B9434} = {383196A2-6B3A-44F8-A11E-8E440E2029F8}
+		{5FD971D5-ED21-4DC2-80C8-01BCB65381EC} = {010ADFB1-B563-49D8-9711-D6A0D6086348}
 	EndGlobalSection
 EndGlobal

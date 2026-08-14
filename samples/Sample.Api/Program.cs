@@ -1,9 +1,13 @@
+using Sample.Api.Products;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<ProductService>();
 
 var app = builder.Build();
 
@@ -35,6 +39,34 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+
+app.MapGet("/products/{id:int}", (
+    int id,
+    ProductService service) =>
+{
+    var result = service.GetById(id);
+
+    if (result.IsSuccess)
+    {
+        return Results.Ok(result.Value);
+    }
+
+    var error = result.FirstError!;
+
+    return error.Type switch
+    {
+        Behzad.BuildingBlocks.Core.Results.ErrorType.Validation =>
+            Results.BadRequest(result.Errors),
+
+        Behzad.BuildingBlocks.Core.Results.ErrorType.NotFound =>
+            Results.NotFound(result.Errors),
+
+        _ =>
+            Results.BadRequest(result.Errors)
+    };
+});
+
 
 app.Run();
 
