@@ -1,11 +1,11 @@
-using Behzad.BuildingBlocks.AspNetCore.Results;
-using Behzad.BuildingBlocks.Core.Results;
+using Behrouzan.BuildingBlocks.AspNetCore.Results;
+using Behrouzan.BuildingBlocks.Core.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 
 
-namespace Behzad.BuildingBlocks.AspNetCore.Tests;
+namespace Behrouzan.BuildingBlocks.AspNetCore.Tests;
 
 public class ResultHttpExtensionsTests
 {
@@ -80,6 +80,10 @@ public class ResultHttpExtensionsTests
         Assert.Equal(
             "Error",
             error.GetProperty("severity").GetString());
+
+        Assert.Equal(
+            "urn:behrouzan:problem:not-found",
+            root.GetProperty("type").GetString());
     }
 
     [Fact]

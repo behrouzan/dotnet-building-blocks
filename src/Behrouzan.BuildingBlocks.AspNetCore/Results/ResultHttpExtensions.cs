@@ -1,7 +1,7 @@
-using Behzad.BuildingBlocks.Core.Results;
+using Behrouzan.BuildingBlocks.Core.Results;
 using Microsoft.AspNetCore.Http;
 
-namespace Behzad.BuildingBlocks.AspNetCore.Results;
+namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
 
 /// <summary>
 /// Provides ASP.NET Core HTTP conversion helpers for application results.

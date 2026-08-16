@@ -1,4 +1,4 @@
-﻿namespace Behzad.BuildingBlocks.Core.Results;
+﻿namespace Behrouzan.BuildingBlocks.Core.Results;
 
 /// <summary>
 /// Represents a structured application error containing a machine-readable code,

@@ -56,10 +56,10 @@ app.MapGet("/products/{id:int}", (
 
     return error.Type switch
     {
-        Behzad.BuildingBlocks.Core.Results.ErrorType.Validation =>
+        Behrouzan.BuildingBlocks.Core.Results.ErrorType.Validation =>
             Results.BadRequest(result.Errors),
 
-        Behzad.BuildingBlocks.Core.Results.ErrorType.NotFound =>
+        Behrouzan.BuildingBlocks.Core.Results.ErrorType.NotFound =>
             Results.NotFound(result.Errors),
 
         _ =>

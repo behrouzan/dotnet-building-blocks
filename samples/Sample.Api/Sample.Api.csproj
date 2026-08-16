@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Behzad.BuildingBlocks.Core\Behzad.BuildingBlocks.Core.csproj" />
+    <ProjectReference Include="..\..\src\Behrouzan.BuildingBlocks.Core\Behrouzan.BuildingBlocks.Core.csproj" />
   </ItemGroup>
 
 </Project>

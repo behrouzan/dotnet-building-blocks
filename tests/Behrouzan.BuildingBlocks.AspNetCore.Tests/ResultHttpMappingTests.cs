@@ -1,7 +1,7 @@
-using Behzad.BuildingBlocks.Core.Results;
-using Behzad.BuildingBlocks.AspNetCore.Results;
+using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.BuildingBlocks.AspNetCore.Results;
 using Microsoft.AspNetCore.Http;
-namespace Behzad.BuildingBlocks.AspNetCore.Tests;
+namespace Behrouzan.BuildingBlocks.AspNetCore.Tests;
 
 public class ResultHttpMappingTests
 {
@@ -198,5 +198,50 @@ public class ResultHttpMappingTests
         Assert.Equal(
             "Request failed",
             title);
+    }
+
+
+    [Fact]
+    public void NotFoundError_ShouldHaveProblemType()
+    {
+        var errors = new[]
+        {
+            Error.NotFound(
+                "Product.NotFound",
+                "Product was not found.")
+        };
+
+        var problemType =
+            ResultHttpMapper.GetProblemType(errors);
+
+        Assert.Equal(
+            "urn:behrouzan:problem:not-found",
+            problemType);
+    }
+
+    [Fact]
+    public void GetStatusCode_ShouldUseConfiguredStatusCode()
+    {
+        var errors = new[]
+        {
+            Error.NotFound(
+                "Product.NotFound",
+                "Product was not found.")
+        };
+
+        var options = new ResultHttpOptions();
+
+        options.MapStatusCode(
+            ErrorType.NotFound,
+            StatusCodes.Status410Gone);
+
+        var statusCode =
+            ResultHttpMapper.GetStatusCode(
+                errors,
+                options);
+
+        Assert.Equal(
+            StatusCodes.Status410Gone,
+            statusCode);
     }
 }

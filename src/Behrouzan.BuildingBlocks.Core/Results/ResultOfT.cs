@@ -1,4 +1,4 @@
-﻿namespace Behzad.BuildingBlocks.Core.Results;
+﻿namespace Behrouzan.BuildingBlocks.Core.Results;
 
 /// <summary>
 /// Represents the outcome of an operation that returns a value when successful.

@@ -1,6 +1,6 @@
-using Behzad.BuildingBlocks.Core.Results;
+using Behrouzan.BuildingBlocks.Core.Results;
 
-namespace Behzad.BuildingBlocks.AspNetCore.Results;
+namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
 
 /// <summary>
 /// Maps application result errors to HTTP-specific values.
@@ -23,7 +23,8 @@ public static class ResultHttpMapper
     /// Thrown when <paramref name="errors"/> is empty.
     /// </exception>
     public static int GetStatusCode(
-        IReadOnlyList<Error> errors)
+        IReadOnlyList<Error> errors,
+        ResultHttpOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(errors);
 
@@ -34,20 +35,10 @@ public static class ResultHttpMapper
                 nameof(errors));
         }
 
+        options ??= new ResultHttpOptions();
         var type = GetEffectiveType(errors);
 
-        return type switch
-        {
-            ErrorType.Validation => 400,
-            ErrorType.Unauthorized => 401,
-            ErrorType.Forbidden => 403,
-            ErrorType.NotFound => 404,
-            ErrorType.Conflict => 409,
-            ErrorType.RateLimit => 429,
-            ErrorType.Unavailable => 503,
-            ErrorType.Timeout => 504,
-            _ => 500
-        };
+        return options.GetStatusCode(type);
     }
 
 
@@ -128,4 +119,66 @@ public static class ResultHttpMapper
 
         return ErrorType.Failure;
     }
+
+    /// <summary>
+    /// Gets a machine-readable problem type identifier for the specified errors.
+    /// </summary>
+    /// <param name="errors">
+    /// The errors produced by the application operation.
+    /// </param>
+    /// <returns>
+    /// A stable problem type identifier.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="errors"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="errors"/> is empty.
+    /// </exception>
+    public static string GetProblemType(
+        IReadOnlyList<Error> errors)
+    {
+        ArgumentNullException.ThrowIfNull(errors);
+
+        if (errors.Count == 0)
+        {
+            throw new ArgumentException(
+                "At least one error is required to determine a problem type.",
+                nameof(errors));
+        }
+
+        var type = GetEffectiveType(errors);
+
+        return type switch
+        {
+            ErrorType.Validation =>
+                "urn:behrouzan:problem:validation",
+
+            ErrorType.Unauthorized =>
+                "urn:behrouzan:problem:unauthorized",
+
+            ErrorType.Forbidden =>
+                "urn:behrouzan:problem:forbidden",
+
+            ErrorType.NotFound =>
+                "urn:behrouzan:problem:not-found",
+
+            ErrorType.Conflict =>
+                "urn:behrouzan:problem:conflict",
+
+            ErrorType.RateLimit =>
+                "urn:behrouzan:problem:rate-limit",
+
+            ErrorType.Unavailable =>
+                "urn:behrouzan:problem:unavailable",
+
+            ErrorType.Timeout =>
+                "urn:behrouzan:problem:timeout",
+
+            _ =>
+                "urn:behrouzan:problem:failure"
+        };
+    }
+
+
 }

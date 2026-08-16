@@ -1,8 +1,8 @@
-using Behzad.BuildingBlocks.Core.Results;
+using Behrouzan.BuildingBlocks.Core.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
-namespace Behzad.BuildingBlocks.AspNetCore.Results;
+namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
 
 /// <summary>
 /// Creates Problem Details responses from application errors.
@@ -47,6 +47,7 @@ public static class ResultProblemDetailsBuilder
 
         var problemDetails = new ProblemDetails
         {
+            Type = ResultHttpMapper.GetProblemType(errors),
             Status = statusCode,
             Title = ResultHttpMapper.GetTitle(errors),
             Detail = errors[0].Message

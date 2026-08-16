@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{383196A2-6B3A-44F8-A11E-8E440E2029F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Behzad.BuildingBlocks.Core", "src\Behzad.BuildingBlocks.Core\Behzad.BuildingBlocks.Core.csproj", "{A879E8D8-F599-45D4-B54C-DA1B8B2CAB0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Behrouzan.BuildingBlocks.Core", "src\Behrouzan.BuildingBlocks.Core\Behrouzan.BuildingBlocks.Core.csproj", "{A879E8D8-F599-45D4-B54C-DA1B8B2CAB0D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{2E8DBE75-2DD1-414C-ADD9-E70BB8D517A7}"
 EndProject
@@ -13,11 +13,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Api", "samples\Sampl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{010ADFB1-B563-49D8-9711-D6A0D6086348}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Behzad.BuildingBlocks.Core.Tests", "tests\Behzad.BuildingBlocks.Core.Tests\Behzad.BuildingBlocks.Core.Tests.csproj", "{6E46CB5A-B4B2-4744-B277-9FFC0209A1B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Behrouzan.BuildingBlocks.Core.Tests", "tests\Behrouzan.BuildingBlocks.Core.Tests\Behrouzan.BuildingBlocks.Core.Tests.csproj", "{6E46CB5A-B4B2-4744-B277-9FFC0209A1B1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Behzad.BuildingBlocks.AspNetCore", "src\Behzad.BuildingBlocks.AspNetCore\Behzad.BuildingBlocks.AspNetCore.csproj", "{48128A51-467D-485F-9A58-528D800B9434}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Behrouzan.BuildingBlocks.AspNetCore", "src\Behrouzan.BuildingBlocks.AspNetCore\Behrouzan.BuildingBlocks.AspNetCore.csproj", "{48128A51-467D-485F-9A58-528D800B9434}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Behzad.BuildingBlocks.AspNetCore.Tests", "tests\Behzad.BuildingBlocks.AspNetCore.Tests\Behzad.BuildingBlocks.AspNetCore.Tests.csproj", "{5FD971D5-ED21-4DC2-80C8-01BCB65381EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Behrouzan.BuildingBlocks.AspNetCore.Tests", "tests\Behrouzan.BuildingBlocks.AspNetCore.Tests\Behrouzan.BuildingBlocks.AspNetCore.Tests.csproj", "{5FD971D5-ED21-4DC2-80C8-01BCB65381EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

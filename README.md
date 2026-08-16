@@ -117,7 +117,7 @@ Each client can decide how to map these paths to its own form controls or UI.
 
 ## Framework Independence
 
-`Behzad.BuildingBlocks.Core` does not depend on:
+`Behrouzan.BuildingBlocks.Core` does not depend on:
 
 - ASP.NET Core
 - HTTP
@@ -141,13 +141,13 @@ Detailed documentation is available in:
 
 ```text
 src/
-  Behzad.BuildingBlocks.Core/
+  Behrouzan.BuildingBlocks.Core/
 
 samples/
   Sample.Api/
 
 tests/
-  Behzad.BuildingBlocks.Core.Tests/
+  Behrouzan.BuildingBlocks.Core.Tests/
 
 docs/
 ```
