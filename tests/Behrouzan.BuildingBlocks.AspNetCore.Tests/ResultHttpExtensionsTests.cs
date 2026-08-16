@@ -19,7 +19,7 @@ public class ResultHttpExtensionsTests
 
         var context = CreateHttpContext();
  
-        var httpResult = result.ToHttpResult(context);
+        var httpResult = result.ToHttpResult();
 
         await httpResult.ExecuteAsync(context);
 
@@ -102,7 +102,7 @@ public class ResultHttpExtensionsTests
 
         var context = CreateHttpContext();
 
-        var httpResult = result.ToHttpResult(context);
+        var httpResult = result.ToHttpResult();
 
         await httpResult.ExecuteAsync(context);
 
@@ -157,7 +157,7 @@ public class ResultHttpExtensionsTests
 
         var context = CreateHttpContext("test-trace-123");
 
-        var httpResult = result.ToHttpResult(context);
+        var httpResult = result.ToHttpResult();
 
         await httpResult.ExecuteAsync(context);
 
@@ -194,7 +194,7 @@ public class ResultHttpExtensionsTests
 
         var context = CreateHttpContext();
 
-        var httpResult = result.ToHttpResult(context);
+        var httpResult = result.ToHttpResult();
 
         await httpResult.ExecuteAsync(context);
 
@@ -253,5 +253,44 @@ public class ResultHttpExtensionsTests
         return context;
     }
 
+    [Fact]
+    public async Task ToHttpResult_ShouldUseConfiguredStatusCodeFromDependencyInjection()
+    {
+        var result = Result<string>.Failure(
+            Error.NotFound(
+                "Product.NotFound",
+                "Product was not found."));
+
+        var services = new ServiceCollection();
+
+        services.AddLogging();
+        services.AddProblemDetails();
+
+        services.AddBehrouzanResultHttp(options =>
+        {
+            options.MapStatusCode(
+                ErrorType.NotFound,
+                StatusCodes.Status410Gone);
+        });
+
+        var serviceProvider =
+            services.BuildServiceProvider();
+
+        var context = new DefaultHttpContext
+        {
+            RequestServices = serviceProvider
+        };
+
+        context.Response.Body = new MemoryStream();
+
+        var httpResult =
+            result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status410Gone,
+            context.Response.StatusCode);
+    }
 
 }

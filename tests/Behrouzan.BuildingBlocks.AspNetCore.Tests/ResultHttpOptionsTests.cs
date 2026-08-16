@@ -1,6 +1,7 @@
 using Behrouzan.BuildingBlocks.AspNetCore.Results;
 using Behrouzan.BuildingBlocks.Core.Results;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Behrouzan.BuildingBlocks.AspNetCore.Tests;
 
@@ -34,5 +35,27 @@ public class ResultHttpOptionsTests
         Assert.Equal(
             StatusCodes.Status422UnprocessableEntity,
             statusCode);
+    }
+
+    [Fact]
+    public void AddBehrouzanResultHttp_ShouldRegisterConfiguredOptions()
+    {
+        var services = new ServiceCollection();
+
+        services.AddBehrouzanResultHttp(options =>
+        {
+            options.MapStatusCode(
+                ErrorType.NotFound,
+                StatusCodes.Status410Gone);
+        });
+
+        var provider = services.BuildServiceProvider();
+
+        var options =
+            provider.GetRequiredService<ResultHttpOptions>();
+
+        Assert.Equal(
+            StatusCodes.Status410Gone,
+            options.GetStatusCode(ErrorType.NotFound));
     }
 }

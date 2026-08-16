@@ -1,5 +1,6 @@
 using Behrouzan.BuildingBlocks.Core.Results;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
 
@@ -24,27 +25,38 @@ public static class ResultHttpExtensions
     /// Thrown when <paramref name="result"/> is <see langword="null"/>.
     /// </exception>
     public static IResult ToHttpResult<T>(
-        this Result<T> result,
-        HttpContext httpContext)
+        this Result<T> result)
     {
         ArgumentNullException.ThrowIfNull(result);
 
-        if (result.IsSuccess)
-        {
-            //return Results.Ok(result.Value);
-            return Microsoft.AspNetCore.Http.Results.Ok(result.Value);
-        }
 
-        var statusCode =
-            ResultHttpMapper.GetStatusCode(result.Errors);
+        return new ResultHttpResult<T>(result);
 
-        var problemDetails =
-        ResultProblemDetailsBuilder.Create(
-            result.Errors,
-            statusCode,
-            httpContext.TraceIdentifier);
+        // if (result.IsSuccess)
+        // {
+        //     //return Results.Ok(result.Value);
+        //     return Microsoft.AspNetCore.Http.Results.Ok(result.Value);
+        // }
 
-        return Microsoft.AspNetCore.Http.Results.Problem(
-            problemDetails);
+        // var options =
+        //     Microsoft.Extensions.DependencyInjection
+        //         .ServiceProviderServiceExtensions
+        //         .GetService<ResultHttpOptions>(
+        //             httpContext.RequestServices)
+        //     ?? new ResultHttpOptions();
+
+        // var statusCode =
+        //     ResultHttpMapper.GetStatusCode(
+        //         result.Errors,
+        //         options);
+
+        // var problemDetails =
+        // ResultProblemDetailsBuilder.Create(
+        //     result.Errors,
+        //     statusCode,
+        //     httpContext.TraceIdentifier);
+
+        // return Microsoft.AspNetCore.Http.Results.Problem(
+        //     problemDetails);
     }
 }
