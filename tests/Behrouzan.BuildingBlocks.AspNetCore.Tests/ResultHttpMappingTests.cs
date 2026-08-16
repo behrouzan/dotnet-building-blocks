@@ -244,4 +244,29 @@ public class ResultHttpMappingTests
             StatusCodes.Status410Gone,
             statusCode);
     }
+
+    [Fact]
+    public void GetProblemType_ShouldUseConfiguredProblemTypeBase()
+    {
+        var errors = new[]
+        {
+            Error.NotFound(
+                "Product.NotFound",
+                "Product was not found.")
+        };
+
+        var options = new ResultHttpOptions
+        {
+            ProblemTypeBase = "https://api.example.com/problems"
+        };
+
+        var problemType =
+            ResultHttpMapper.GetProblemType(
+                errors,
+                options);
+
+        Assert.Equal(
+            "https://api.example.com/problems/not-found",
+            problemType);
+    }
 }

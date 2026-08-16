@@ -56,4 +56,37 @@ public sealed class ResultHttpOptions
     {
         return _statusCodes[errorType];
     }
+
+    /// <summary>
+    /// Gets or sets the base identifier used for problem types.
+    /// </summary>
+    public string ProblemTypeBase { get; set; }
+        = "urn:behrouzan:problem";
+
+
+    /// <summary>
+    /// Validates the current HTTP result configuration.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the configuration contains invalid values.
+    /// </exception>
+    public void Validate()
+    {
+        if (string.IsNullOrWhiteSpace(ProblemTypeBase))
+        {
+            throw new InvalidOperationException(
+                "ProblemTypeBase cannot be null, empty, or whitespace.");
+        }
+
+        foreach (var statusCode in _statusCodes.Values)
+        {
+            if (statusCode < 100 || statusCode > 599)
+            {
+                throw new InvalidOperationException(
+                    $"HTTP status code '{statusCode}' is invalid.");
+            }
+        }
+    }
+
+
 }

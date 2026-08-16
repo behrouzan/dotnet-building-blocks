@@ -136,7 +136,8 @@ public static class ResultHttpMapper
     /// Thrown when <paramref name="errors"/> is empty.
     /// </exception>
     public static string GetProblemType(
-        IReadOnlyList<Error> errors)
+        IReadOnlyList<Error> errors,
+        ResultHttpOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(errors);
 
@@ -147,37 +148,28 @@ public static class ResultHttpMapper
                 nameof(errors));
         }
 
+        options ??= new ResultHttpOptions();
         var type = GetEffectiveType(errors);
 
-        return type switch
+        var suffix = type switch
         {
-            ErrorType.Validation =>
-                "urn:behrouzan:problem:validation",
-
-            ErrorType.Unauthorized =>
-                "urn:behrouzan:problem:unauthorized",
-
-            ErrorType.Forbidden =>
-                "urn:behrouzan:problem:forbidden",
-
-            ErrorType.NotFound =>
-                "urn:behrouzan:problem:not-found",
-
-            ErrorType.Conflict =>
-                "urn:behrouzan:problem:conflict",
-
-            ErrorType.RateLimit =>
-                "urn:behrouzan:problem:rate-limit",
-
-            ErrorType.Unavailable =>
-                "urn:behrouzan:problem:unavailable",
-
-            ErrorType.Timeout =>
-                "urn:behrouzan:problem:timeout",
-
-            _ =>
-                "urn:behrouzan:problem:failure"
+            ErrorType.Validation => "validation",
+            ErrorType.Unauthorized => "unauthorized",
+            ErrorType.Forbidden => "forbidden",
+            ErrorType.NotFound => "not-found",
+            ErrorType.Conflict => "conflict",
+            ErrorType.RateLimit => "rate-limit",
+            ErrorType.Unavailable => "unavailable",
+            ErrorType.Timeout => "timeout",
+            _ => "failure"
         };
+
+        var separator =
+            options.ProblemTypeBase.StartsWith("urn:", StringComparison.OrdinalIgnoreCase)
+                ? ":"
+                : "/";
+
+        return $"{options.ProblemTypeBase.TrimEnd('/', ':')}{separator}{suffix}";
     }
 
 

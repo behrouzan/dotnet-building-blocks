@@ -293,4 +293,120 @@ public class ResultHttpExtensionsTests
             context.Response.StatusCode);
     }
 
+    [Fact]
+    public async Task ToHttpResult_ShouldUseConfiguredProblemTypeBaseFromDependencyInjection()
+    {
+        var result = Result<string>.Failure(
+            Error.NotFound(
+                "Product.NotFound",
+                "Product was not found."));
+
+        var services = new ServiceCollection();
+
+        services.AddLogging();
+        services.AddProblemDetails();
+
+        services.AddBehrouzanResultHttp(options =>
+        {
+            options.ProblemTypeBase =
+                "https://api.example.com/problems";
+        });
+
+        var provider = services.BuildServiceProvider();
+
+        var context = new DefaultHttpContext
+        {
+            RequestServices = provider
+        };
+
+        context.Response.Body = new MemoryStream();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        context.Response.Body.Position = 0;
+
+        using var reader =
+            new StreamReader(context.Response.Body);
+
+        var body = await reader.ReadToEndAsync();
+
+        using var document =
+            JsonDocument.Parse(body);
+
+        Assert.Equal(
+            "https://api.example.com/problems/not-found",
+            document.RootElement
+                .GetProperty("type")
+                .GetString());
+    }
+
+
+    [Fact]
+    public async Task ToHttpResult_WhenNonGenericResultIsSuccessful_ShouldReturn204()
+    {
+        var result = Result.Success();
+
+        var context = CreateHttpContext();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status204NoContent,
+            context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ToHttpResult_WhenNonGenericResultFails_ShouldReturnProblemDetails()
+    {
+        var result = Result.Failure(
+            Error.NotFound(
+                "Product.NotFound",
+                "Product was not found."));
+
+        var context = CreateHttpContext();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status404NotFound,
+            context.Response.StatusCode);
+
+        context.Response.Body.Position = 0;
+
+        using var reader =
+            new StreamReader(context.Response.Body);
+
+        var body = await reader.ReadToEndAsync();
+
+        using var document =
+            JsonDocument.Parse(body);
+
+        var root = document.RootElement;
+
+        Assert.Equal(
+            "urn:behrouzan:problem:not-found",
+            root.GetProperty("type").GetString());
+
+        Assert.Equal(
+            "Resource not found",
+            root.GetProperty("title").GetString());
+
+        Assert.Equal(
+            StatusCodes.Status404NotFound,
+            root.GetProperty("status").GetInt32());
+
+        var errors = root.GetProperty("errors");
+
+        Assert.Single(errors.EnumerateArray());
+
+        Assert.Equal(
+            "Product.NotFound",
+            errors[0].GetProperty("code").GetString());
+    }
 }

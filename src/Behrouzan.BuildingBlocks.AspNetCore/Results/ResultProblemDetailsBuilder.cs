@@ -24,6 +24,7 @@ public static class ResultProblemDetailsBuilder
     public static ProblemDetails Create(
         IReadOnlyList<Error> errors,
         int statusCode,
+        ResultHttpOptions? options = null,
         string? traceId = null)
     {
         ArgumentNullException.ThrowIfNull(errors);
@@ -35,6 +36,8 @@ public static class ResultProblemDetailsBuilder
                 nameof(errors));
         }
 
+        options ??= new ResultHttpOptions();
+        
         var httpErrors = errors
         .Select(error => new HttpError(
             error.Code,
@@ -47,7 +50,9 @@ public static class ResultProblemDetailsBuilder
 
         var problemDetails = new ProblemDetails
         {
-            Type = ResultHttpMapper.GetProblemType(errors),
+            Type = ResultHttpMapper.GetProblemType(
+                errors,
+                options),
             Status = statusCode,
             Title = ResultHttpMapper.GetTitle(errors),
             Detail = errors[0].Message

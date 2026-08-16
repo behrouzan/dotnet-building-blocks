@@ -1,3 +1,4 @@
+using Behrouzan.BuildingBlocks.AspNetCore.Results;
 using Sample.Api.Products;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddProblemDetails();
+builder.Services.AddBehrouzanResultHttp();
 
 builder.Services.AddScoped<ProductService>();
 
@@ -47,24 +51,16 @@ app.MapGet("/products/{id:int}", (
 {
     var result = service.GetById(id);
 
-    if (result.IsSuccess)
-    {
-        return Results.Ok(result.Value);
-    }
+    return result.ToHttpResult();
+});
 
-    var error = result.FirstError!;
+app.MapDelete("/products/{id:int}", (
+    int id,
+    ProductService service) =>
+{
+    var result = service.Delete(id);
 
-    return error.Type switch
-    {
-        Behrouzan.BuildingBlocks.Core.Results.ErrorType.Validation =>
-            Results.BadRequest(result.Errors),
-
-        Behrouzan.BuildingBlocks.Core.Results.ErrorType.NotFound =>
-            Results.NotFound(result.Errors),
-
-        _ =>
-            Results.BadRequest(result.Errors)
-    };
+    return result.ToHttpResult();
 });
 
 

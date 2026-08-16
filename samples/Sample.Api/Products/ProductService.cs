@@ -30,4 +30,26 @@ public sealed class ProductService
 
         return Result<ProductDto>.Success(product);
     }
+
+    public Result Delete(int id)
+    {
+        if (id <= 0)
+        {
+            return Result.Failure(
+                Error.Validation(
+                    "Product.Id.Invalid",
+                    "Product id must be greater than zero.",
+                    "id"));
+        }
+
+        if (id != 1)
+        {
+            return Result.Failure(
+                Error.NotFound(
+                    "Product.NotFound",
+                    "Product was not found."));
+        }
+
+        return Result.Success();
+    }
 }

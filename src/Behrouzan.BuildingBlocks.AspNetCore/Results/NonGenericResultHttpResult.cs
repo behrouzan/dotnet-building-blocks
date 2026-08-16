@@ -1,19 +1,18 @@
 using Behrouzan.BuildingBlocks.Core.Results;
 using Microsoft.AspNetCore.Http;
 
+
 namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
 
 /// <summary>
-/// Represents an ASP.NET Core HTTP result backed by an application result.
+/// Represents an ASP.NET Core HTTP result backed by a non-generic application result.
 /// </summary>
-/// <typeparam name="T">
-/// The type of value contained in a successful result.
-/// </typeparam>
-internal sealed class ResultHttpResult<T> : IResult
+internal sealed class NonGenericResultHttpResult : IResult
 {
-    private readonly Result<T> _result;
+    private readonly Result _result;
 
-    public ResultHttpResult(Result<T> result)
+    public NonGenericResultHttpResult(
+        Result result)
     {
         ArgumentNullException.ThrowIfNull(result);
 
@@ -30,8 +29,7 @@ internal sealed class ResultHttpResult<T> : IResult
         if (_result.IsSuccess)
         {
             httpResult =
-                Microsoft.AspNetCore.Http.Results.Ok(
-                    _result.Value);
+                Microsoft.AspNetCore.Http.Results.NoContent();
         }
         else
         {

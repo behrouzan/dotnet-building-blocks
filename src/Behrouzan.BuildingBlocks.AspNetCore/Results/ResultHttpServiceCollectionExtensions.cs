@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
 
@@ -15,7 +16,23 @@ public static class ResultHttpServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.AddSingleton(new ResultHttpOptions());
+        services
+            .AddOptions<ResultHttpOptions>()
+            .Validate(
+                options =>
+                {
+                    try
+                    {
+                        options.Validate();
+                        return true;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                },
+                "Result HTTP options are invalid.")
+            .ValidateOnStart();
 
         return services;
     }
@@ -30,11 +47,24 @@ public static class ResultHttpServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);
 
-        var options = new ResultHttpOptions();
-
-        configure(options);
-
-        services.AddSingleton(options);
+        services
+            .AddOptions<ResultHttpOptions>()
+            .Configure(configure)
+            .Validate(
+                options =>
+                {
+                    try
+                    {
+                        options.Validate();
+                        return true;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                },
+                "Result HTTP options are invalid.")
+            .ValidateOnStart();
 
         return services;
     }
