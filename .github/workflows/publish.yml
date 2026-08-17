@@ -1,0 +1,48 @@
+name: Publish NuGet packages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build -c Release --no-restore
+
+      - name: Test
+        run: dotnet test -c Release --no-build
+
+      - name: Pack Behrouzan.Results
+        run: dotnet pack src/Behrouzan.Results/Behrouzan.Results.csproj -c Release --no-build -o ./artifacts
+
+      - name: Pack Behrouzan.Results.AspNetCore
+        run: dotnet pack src/Behrouzan.Results.AspNetCore/Behrouzan.Results.AspNetCore.csproj -c Release --no-build -o ./artifacts
+
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: behrouzan
+
+      - name: Publish Behrouzan.Results
+        run: dotnet nuget push ./artifacts/Behrouzan.Results.0.1.0.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+
+      - name: Publish Behrouzan.Results.AspNetCore
+        run: dotnet nuget push ./artifacts/Behrouzan.Results.AspNetCore.0.1.0.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
