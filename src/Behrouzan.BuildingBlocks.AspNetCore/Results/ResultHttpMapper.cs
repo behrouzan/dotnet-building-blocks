@@ -5,7 +5,7 @@ namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
 /// <summary>
 /// Maps application result errors to HTTP-specific values.
 /// </summary>
-public static class ResultHttpMapper
+internal static class ResultHttpMapper
 {
     /// <summary>
     /// Gets the HTTP status code for the specified errors.

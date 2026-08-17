@@ -409,4 +409,255 @@ public class ResultHttpExtensionsTests
             "Product.NotFound",
             errors[0].GetProperty("code").GetString());
     }
+
+    [Fact]
+    public async Task ToHttpResult_WhenConflict_ShouldReturn409()
+    {
+        var result = Result<string>.Failure(
+            Error.Conflict(
+                "User.Email.AlreadyExists",
+                "Email already exists."));
+
+        var context = CreateHttpContext();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status409Conflict,
+            context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ToHttpResult_WhenUnauthorized_ShouldReturn401()
+    {
+        var result = Result<string>.Failure(
+            Error.Unauthorized(
+                "Authentication.Required",
+                "Authentication is required."));
+
+        var context = CreateHttpContext();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status401Unauthorized,
+            context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ToHttpResult_WhenForbidden_ShouldReturn403()
+    {
+        var result = Result<string>.Failure(
+            Error.Forbidden(
+                "Access.Forbidden",
+                "Access is forbidden."));
+
+        var context = CreateHttpContext();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status403Forbidden,
+            context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ToHttpResult_WhenRateLimited_ShouldReturn429()
+    {
+        var result = Result<string>.Failure(
+            Error.RateLimit(
+                "Requests.RateLimit",
+                "Too many requests."));
+
+        var context = CreateHttpContext();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status429TooManyRequests,
+            context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ToHttpResult_WhenUnavailable_ShouldReturn503()
+    {
+        var result = Result<string>.Failure(
+            Error.Unavailable(
+                "Service.Unavailable",
+                "Service is unavailable."));
+
+        var context = CreateHttpContext();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status503ServiceUnavailable,
+            context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ToHttpResult_WhenTimeout_ShouldReturn504()
+    {
+        var result = Result<string>.Failure(
+            Error.Timeout(
+                "Operation.Timeout",
+                "Operation timed out."));
+
+        var context = CreateHttpContext();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status504GatewayTimeout,
+            context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ToHttpResult_WhenErrorsAreMixed_ShouldUseDeterministicPriority()
+    {
+        var result = Result<string>.Failure(
+            Error.Validation(
+                "User.Email.Invalid",
+                "Email is invalid.",
+                "email"),
+
+            Error.Conflict(
+                "User.Email.AlreadyExists",
+                "Email already exists.",
+                "email"));
+
+        var context = CreateHttpContext();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status409Conflict,
+            context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ToHttpResult_WhenConfigured_ShouldUseCustomStatusCode()
+    {
+        var result = Result<string>.Failure(
+            Error.NotFound(
+                "Product.NotFound",
+                "Product was not found."));
+
+        var services = new ServiceCollection();
+
+        services.AddLogging();
+        services.AddProblemDetails();
+
+        services.AddBehrouzanResultHttp(options =>
+        {
+            options.MapStatusCode(
+                ErrorType.NotFound,
+                StatusCodes.Status410Gone);
+        });
+
+        var provider = services.BuildServiceProvider();
+
+        var context = new DefaultHttpContext
+        {
+            RequestServices = provider
+        };
+
+        context.Response.Body = new MemoryStream();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status410Gone,
+            context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ToHttpResult_WhenMixedErrorOrderChanges_ShouldKeepSamePriority()
+    {
+        var result = Result<string>.Failure(
+            Error.Conflict(
+                "User.Email.AlreadyExists",
+                "Email already exists.",
+                "email"),
+
+            Error.Validation(
+                "User.Email.Invalid",
+                "Email is invalid.",
+                "email"));
+
+        var context = CreateHttpContext();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        Assert.Equal(
+            StatusCodes.Status409Conflict,
+            context.Response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ToHttpResult_WhenConfigured_ShouldUseCustomProblemTypeBase()
+    {
+        var result = Result<string>.Failure(
+            Error.NotFound(
+                "Product.NotFound",
+                "Product was not found."));
+
+        var services = new ServiceCollection();
+
+        services.AddLogging();
+        services.AddProblemDetails();
+
+        services.AddBehrouzanResultHttp(options =>
+        {
+            options.ProblemTypeBase =
+                "https://api.example.com/problems";
+        });
+
+        var provider = services.BuildServiceProvider();
+
+        var context = new DefaultHttpContext
+        {
+            RequestServices = provider
+        };
+
+        context.Response.Body = new MemoryStream();
+
+        var httpResult = result.ToHttpResult();
+
+        await httpResult.ExecuteAsync(context);
+
+        context.Response.Body.Position = 0;
+
+        using var reader =
+            new StreamReader(context.Response.Body);
+
+        var body = await reader.ReadToEndAsync();
+
+        using var document =
+            JsonDocument.Parse(body);
+
+        Assert.Equal(
+            "https://api.example.com/problems/not-found",
+            document.RootElement
+                .GetProperty("type")
+                .GetString());
+    }
 }

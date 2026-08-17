@@ -7,7 +7,7 @@ namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
 /// <summary>
 /// Creates Problem Details responses from application errors.
 /// </summary>
-public static class ResultProblemDetailsBuilder
+internal static class ResultProblemDetailsBuilder
 {
     /// <summary>
     /// Creates a <see cref="ProblemDetails"/> instance for the specified errors.

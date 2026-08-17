@@ -51,7 +51,7 @@ public sealed class ResultHttpOptions
     /// <summary>
     /// Gets the configured HTTP status code for an error type.
     /// </summary>
-    public int GetStatusCode(
+    internal int GetStatusCode(
         ErrorType errorType)
     {
         return _statusCodes[errorType];
@@ -70,7 +70,7 @@ public sealed class ResultHttpOptions
     /// <exception cref="InvalidOperationException">
     /// Thrown when the configuration contains invalid values.
     /// </exception>
-    public void Validate()
+    internal void Validate()
     {
         if (string.IsNullOrWhiteSpace(ProblemTypeBase))
         {
