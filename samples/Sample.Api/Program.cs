@@ -1,4 +1,4 @@
-using Behrouzan.BuildingBlocks.AspNetCore.Results;
+using Behrouzan.Results.AspNetCore;
 using Sample.Api.Products;
 
 var builder = WebApplication.CreateBuilder(args);

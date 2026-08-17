@@ -1,8 +1,7 @@
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
+namespace Behrouzan.Results.AspNetCore;
 
 /// <summary>
 /// Provides ASP.NET Core HTTP conversion helpers for application results.
@@ -19,7 +18,7 @@ public static class ResultHttpExtensions
     /// The application result to convert.
     /// </param>
     /// <returns>
-    /// An HTTP result representing either the successful value or the failure.
+    /// A 200 response containing the successful value, or an HTTP problem response when failed.
     /// </returns>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="result"/> is <see langword="null"/>.
@@ -29,7 +28,6 @@ public static class ResultHttpExtensions
     {
         ArgumentNullException.ThrowIfNull(result);
         return new ResultHttpResult<T>(result);
-
     }
 
     /// <summary>

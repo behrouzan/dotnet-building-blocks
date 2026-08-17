@@ -1,4 +1,4 @@
-﻿namespace Behrouzan.BuildingBlocks.Core.Results;
+﻿namespace Behrouzan.Results;
 
 /// <summary>
 /// Represents a structured application error containing a machine-readable code,
@@ -39,6 +39,10 @@ public sealed record Error
     /// <summary>
     /// Gets additional machine-readable information associated with the error.
     /// </summary>
+    /// <remarks>
+    /// Examples include validation limits, attempted values, external identifiers,
+    /// or other structured context related to the error.
+    /// </remarks>
     public IReadOnlyDictionary<string, object?> Metadata { get; }
 
     /// <summary>
@@ -229,6 +233,10 @@ public sealed record Error
     /// <summary>
     /// Returns a new error containing the specified metadata entry.
     /// </summary>
+    /// <remarks>
+    /// If the specified key already exists, its value is replaced in the returned error.
+    /// The current instance is not modified.
+    /// </remarks>
     /// <param name="key">The metadata key.</param>
     /// <param name="value">The metadata value.</param>
     /// <returns>
@@ -261,6 +269,9 @@ public sealed record Error
     /// <summary>
     /// Returns a new error with the specified severity.
     /// </summary>
+    /// <remarks>
+    /// The current instance is not modified.
+    /// </remarks>
     /// <param name="severity">The new severity level.</param>
     /// <returns>
     /// A new <see cref="Error"/> with the specified severity.

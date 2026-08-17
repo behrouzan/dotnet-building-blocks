@@ -1,11 +1,11 @@
-using Behrouzan.BuildingBlocks.AspNetCore.Results;
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results.AspNetCore;
+using Behrouzan.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 
 
-namespace Behrouzan.BuildingBlocks.AspNetCore.Tests;
+namespace Behrouzan.Results.AspNetCore.Tests;
 
 public class ResultHttpExtensionsTests
 {

@@ -1,4 +1,4 @@
-namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
+namespace Behrouzan.Results.AspNetCore;
 
 /// <summary>
 /// Represents an application error in an HTTP response.

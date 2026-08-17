@@ -1,9 +1,9 @@
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
+namespace Behrouzan.Results.AspNetCore;
 
 /// <summary>
 /// Creates HTTP problem results for failed application results.

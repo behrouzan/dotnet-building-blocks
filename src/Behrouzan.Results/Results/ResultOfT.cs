@@ -1,4 +1,4 @@
-﻿namespace Behrouzan.BuildingBlocks.Core.Results;
+﻿namespace Behrouzan.Results;
 
 /// <summary>
 /// Represents the outcome of an operation that returns a value when successful.
@@ -101,6 +101,9 @@ public sealed class Result<T> : Result
     /// <exception cref="InvalidOperationException">
     /// Thrown when the error collection is empty.
     /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the error collection contains a null value.
+    /// </exception>
     public new static Result<T> Failure(
         IEnumerable<Error> errors)
     {
@@ -126,6 +129,9 @@ public sealed class Result<T> : Result
     /// </exception>
     /// <exception cref="InvalidOperationException">
     /// Thrown when the error array is empty.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the error array contains a null value.
     /// </exception>
     public new static Result<T> Failure(
         params Error[] errors)
@@ -210,13 +216,23 @@ public sealed class Result<T> : Result
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="binder"/> is <see langword="null"/>.
     /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <paramref name="binder"/> returns <see langword="null"/>.
+    /// </exception>
     public Result<TNewValue> Bind<TNewValue>(
         Func<T, Result<TNewValue>> binder)
     {
         ArgumentNullException.ThrowIfNull(binder);
 
-        return IsSuccess
-            ? binder(Value)
-            : Result<TNewValue>.Failure(Errors);
+        if (IsFailure)
+        {
+            return Result<TNewValue>.Failure(Errors);
+        }
+
+        var result = binder(Value);
+
+        return result
+            ?? throw new InvalidOperationException(
+                "The binder function cannot return null.");
     }
 }

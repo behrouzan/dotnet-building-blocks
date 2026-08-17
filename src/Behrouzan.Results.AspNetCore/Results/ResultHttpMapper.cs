@@ -1,6 +1,6 @@
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results;
 
-namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
+namespace Behrouzan.Results.AspNetCore;
 
 /// <summary>
 /// Maps application result errors to HTTP-specific values.

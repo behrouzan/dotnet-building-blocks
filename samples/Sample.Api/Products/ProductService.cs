@@ -1,4 +1,4 @@
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results;
 
 namespace Sample.Api.Products;
 

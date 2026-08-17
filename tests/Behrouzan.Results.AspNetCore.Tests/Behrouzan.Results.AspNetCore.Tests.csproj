@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Behrouzan.BuildingBlocks.AspNetCore\Behrouzan.BuildingBlocks.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\Behrouzan.Results.AspNetCore\Behrouzan.Results.AspNetCore.csproj" />
   </ItemGroup>
 
 </Project>

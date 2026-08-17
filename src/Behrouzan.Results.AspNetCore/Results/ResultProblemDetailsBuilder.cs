@@ -1,8 +1,8 @@
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
-namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
+namespace Behrouzan.Results.AspNetCore;
 
 /// <summary>
 /// Creates Problem Details responses from application errors.

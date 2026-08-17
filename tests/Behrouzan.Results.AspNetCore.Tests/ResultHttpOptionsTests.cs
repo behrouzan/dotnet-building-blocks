@@ -1,11 +1,11 @@
-using Behrouzan.BuildingBlocks.AspNetCore.Results;
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results.AspNetCore;
+using Behrouzan.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 
-namespace Behrouzan.BuildingBlocks.AspNetCore.Tests;
+namespace Behrouzan.Results.AspNetCore.Tests;
 
 public class ResultHttpOptionsTests
 {
@@ -51,5 +51,16 @@ public class ResultHttpOptionsTests
 
         Assert.Throws<OptionsValidationException>(() =>
             _ = options.Value);
+    }
+
+    [Fact]
+    public void MapStatusCode_WhenStatusCodeIsInvalid_ShouldThrow()
+    {
+        var options = new ResultHttpOptions();
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            options.MapStatusCode(
+                ErrorType.NotFound,
+                999));
     }
 }

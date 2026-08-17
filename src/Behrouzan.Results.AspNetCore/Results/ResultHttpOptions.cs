@@ -1,7 +1,7 @@
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results;
 using Microsoft.AspNetCore.Http;
 
-namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
+namespace Behrouzan.Results.AspNetCore;
 
 /// <summary>
 /// Configures HTTP behavior for application results.
@@ -39,12 +39,29 @@ public sealed class ResultHttpOptions
     };
 
     /// <summary>
-    /// Sets the HTTP status code associated with an error type.
+    /// Sets the HTTP status code associated with the specified error type.
     /// </summary>
+    /// <param name="errorType">
+    /// The application error type to configure.
+    /// </param>
+    /// <param name="statusCode">
+    /// The HTTP status code to use for the error type.
+    /// </param>
+    /// /// <exception cref="ArgumentOutOfRangeException">
+    /// Thrown when <paramref name="statusCode"/> is outside the valid HTTP status code range.
+    /// </exception>
     public void MapStatusCode(
         ErrorType errorType,
         int statusCode)
     {
+        if (statusCode < 100 || statusCode > 599)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(statusCode),
+                statusCode,
+                "HTTP status code must be between 100 and 599.");
+        }
+
         _statusCodes[errorType] = statusCode;
     }
 
@@ -58,8 +75,11 @@ public sealed class ResultHttpOptions
     }
 
     /// <summary>
-    /// Gets or sets the base identifier used for problem types.
+    /// Gets or sets the base URI or URN used to generate Problem Details type identifiers.
     /// </summary>
+    /// <remarks>
+    /// The default value is <c>urn:behrouzan:problem</c>.
+    /// </remarks>
     public string ProblemTypeBase { get; set; }
         = "urn:behrouzan:problem";
 

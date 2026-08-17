@@ -1,8 +1,8 @@
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results;
 using Microsoft.AspNetCore.Http;
 
 
-namespace Behrouzan.BuildingBlocks.AspNetCore.Results;
+namespace Behrouzan.Results.AspNetCore;
 
 /// <summary>
 /// Represents an ASP.NET Core HTTP result backed by a non-generic application result.

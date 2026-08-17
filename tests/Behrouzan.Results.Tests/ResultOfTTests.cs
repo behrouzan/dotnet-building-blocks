@@ -1,6 +1,6 @@
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results;
 
-namespace Behrouzan.BuildingBlocks.Core.Tests;
+namespace Behrouzan.Results.Tests;
 
 public class ResultOfTTests
 {
@@ -198,5 +198,14 @@ public class ResultOfTTests
 
         Assert.Throws<ArgumentNullException>(() =>
             result.Bind<int>(null!));
+    }
+
+    [Fact]
+    public void Bind_WhenBinderReturnsNull_ShouldThrow()
+    {
+        var result = Result<string>.Success("Product");
+
+        Assert.Throws<InvalidOperationException>(() =>
+            result.Bind<int>(_ => null!));
     }
 }

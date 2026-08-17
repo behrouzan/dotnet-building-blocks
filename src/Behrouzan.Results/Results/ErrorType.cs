@@ -1,4 +1,4 @@
-namespace Behrouzan.BuildingBlocks.Core.Results;
+namespace Behrouzan.Results;
 
 /// <summary>
 /// Defines the semantic category of an application error.

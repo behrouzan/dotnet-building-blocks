@@ -1,6 +1,6 @@
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results;
 
-namespace Behrouzan.BuildingBlocks.Core.Tests;
+namespace Behrouzan.Results.Tests;
 
 public class ErrorTests
 {

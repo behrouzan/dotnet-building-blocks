@@ -1,4 +1,4 @@
-﻿namespace Behrouzan.BuildingBlocks.Core.Results;
+﻿namespace Behrouzan.Results;
 
 /// <summary>
 /// Represents the outcome of an operation that does not return a value.
@@ -20,14 +20,13 @@ public class Result
     /// Thrown when a successful result contains errors,
     /// or when a failed result contains no errors.
     /// </exception>
-    /// /// <exception cref="ArgumentException">
+    /// <exception cref="ArgumentException">
     /// Thrown when the error collection contains a null value.
     /// </exception>
-    protected Result(
+    private protected Result(
         bool isSuccess,
         IEnumerable<Error>? errors = null)
     {
-        //_errors = errors?.ToArray() ?? [];
         _errors = errors?.ToArray() ?? [];
 
         if (_errors.Any(error => error is null))
@@ -123,6 +122,9 @@ public class Result
     /// <exception cref="InvalidOperationException">
     /// Thrown when the error collection is empty.
     /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the error collection contains a null value.
+    /// </exception>
     public static Result Failure(
         IEnumerable<Error> errors)
     {
@@ -148,6 +150,9 @@ public class Result
     /// <exception cref="InvalidOperationException">
     /// Thrown when the error array is empty.
     /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the error array contains a null value.
+    /// </exception>
     public static Result Failure(
         params Error[] errors) =>
         Failure((IEnumerable<Error>)errors);
@@ -166,10 +171,20 @@ public class Result
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="results"/> is <see langword="null"/>.
     /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Thrown when the result collection contains a null value.
+    /// </exception>
     public static Result Combine(
         params Result[] results)
     {
         ArgumentNullException.ThrowIfNull(results);
+        
+        if (results.Any(result => result is null))
+        {
+            throw new ArgumentException(
+                "The result collection cannot contain null values.",
+                nameof(results));
+        }
 
         var errors = results
             .Where(result => result.IsFailure)

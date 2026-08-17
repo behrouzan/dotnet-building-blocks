@@ -1,4 +1,4 @@
-﻿namespace Behrouzan.BuildingBlocks.Core.Results;
+﻿namespace Behrouzan.Results;
 
 /// <summary>
 /// Defines the severity level of an application error.

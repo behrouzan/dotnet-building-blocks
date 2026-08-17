@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Behrouzan.BuildingBlocks.Core\Behrouzan.BuildingBlocks.Core.csproj" />
+    <ProjectReference Include="..\Behrouzan.Results\Behrouzan.Results.csproj" />
   </ItemGroup>
  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

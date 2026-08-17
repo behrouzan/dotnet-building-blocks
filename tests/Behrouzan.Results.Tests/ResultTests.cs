@@ -1,6 +1,6 @@
-using Behrouzan.BuildingBlocks.Core.Results;
+using Behrouzan.Results;
 
-namespace Behrouzan.BuildingBlocks.Core.Tests;
+namespace Behrouzan.Results.Tests;
 
 public class ResultTests
 {
@@ -135,5 +135,14 @@ public class ResultTests
 
         Assert.True(combined.IsSuccess);
         Assert.Empty(combined.Errors);
+    }
+
+    [Fact]
+    public void Combine_WhenResultsContainNull_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            Result.Combine(
+                Result.Success(),
+                null!));
     }
 }
