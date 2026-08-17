@@ -13,6 +13,10 @@ internal static class ResultHttpMapper
     /// <param name="errors">
     /// The errors produced by the application operation.
     /// </param>
+    /// <param name="options">
+    /// The optional HTTP result configuration used to resolve the status code.
+    /// When <see langword="null"/>, the default configuration is used.
+    /// </param>
     /// <returns>
     /// The HTTP status code associated with the error set.
     /// </returns>
@@ -125,6 +129,10 @@ internal static class ResultHttpMapper
     /// </summary>
     /// <param name="errors">
     /// The errors produced by the application operation.
+    /// </param>
+    /// <param name="options">
+    /// The optional HTTP result configuration used to build the problem type identifier.
+    /// When <see langword="null"/>, the default configuration is used.
     /// </param>
     /// <returns>
     /// A stable problem type identifier.

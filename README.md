@@ -1,179 +1,115 @@
-# dotnet-building-blocks# Behzad Building Blocks
+# Behrouzan .NET Building Blocks
 
-Reusable, framework-independent building blocks for .NET applications.
+Reusable building blocks and libraries for .NET applications.
 
-The project is designed to provide common application primitives that can be reused across different projects instead of implementing the same infrastructure repeatedly.
+This repository contains independent NuGet packages designed to solve common application concerns without repeatedly implementing the same infrastructure across projects.
 
-## Current Features
+Each package is independently installable and focuses on a specific responsibility.
 
-### Result & Error
+## Packages
 
-A structured way to represent successful operations and expected application failures.
+### Behrouzan.Results
 
-Features currently include:
+A lightweight, framework-independent Result pattern library for representing successful operations and expected application failures.
+
+Key features include:
 
 - `Result`
 - `Result<T>`
-- Structured `Error`
+- Structured errors
 - Multiple errors
-- Multiple validation errors
-- Field/property-specific errors
-- Nested property paths
-- Error codes
-- Error types
+- Validation errors
+- Property paths
+- Error codes and types
 - Error severity
-- Custom metadata
-- Safe value access
-- Factory methods
+- Metadata
+- `Match`
+- `Map`
+- `Bind`
+- `Combine`
 
-## Quick Start
+Package documentation:
 
-### Successful operation without a value
+[`src/Behrouzan.Results/README.md`](src/Behrouzan.Results/README.md)
 
-```csharp
-return Result.Success();
-```
+---
 
-### Failed operation
+### Behrouzan.Results.AspNetCore
 
-```csharp
-return Result.Failure(
-    Error.NotFound(
-        "Product.NotFound",
-        "Product was not found."));
-```
+ASP.NET Core integration for `Behrouzan.Results`.
 
-### Successful operation with a value
+Key features include:
 
-```csharp
-return Result<ProductDto>.Success(productDto);
-```
+- `Result` to `IResult` conversion
+- `Result<T>` to `IResult` conversion
+- Problem Details responses
+- Automatic HTTP status-code mapping
+- Configurable status-code mappings
+- Configurable problem type identifiers
+- Structured HTTP errors
+- Request trace identifiers
+- Dependency injection integration
 
-### Failed operation with a value type
+Package documentation:
 
-```csharp
-return Result<ProductDto>.Failure(
-    Error.NotFound(
-        "Product.NotFound",
-        "Product was not found."));
-```
+[`src/Behrouzan.Results.AspNetCore/README.md`](src/Behrouzan.Results.AspNetCore/README.md)
 
-## Validation
-
-Multiple validation errors can be returned together:
-
-```csharp
-return Result.Failure(
-    Error.Validation(
-        "User.Email.Invalid",
-        "Email is invalid.",
-        "email"),
-
-    Error.Validation(
-        "User.Password.TooShort",
-        "Password must contain at least 8 characters.",
-        "password"));
-```
-
-Multiple errors may also target the same property.
-
-```csharp
-return Result.Failure(
-    Error.Validation(
-        "User.Password.TooShort",
-        "Password must contain at least 8 characters.",
-        "password"),
-
-    Error.Validation(
-        "User.Password.RequiresDigit",
-        "Password must contain at least one digit.",
-        "password"));
-```
-
-## Client Independence
-
-The Core library does not depend on any frontend or application framework.
-
-Errors can be consumed by:
-
-- Angular
-- React
-- Next.js
-- Flutter
-- .NET MAUI
-- Desktop applications
-- Worker services
-- Other API clients
-
-For example, `PropertyPath` can identify the input associated with an error:
-
-```text
-email
-address.postalCode
-items[2].quantity
-```
-
-Each client can decide how to map these paths to its own form controls or UI.
-
-## Framework Independence
-
-`Behrouzan.Results` does not depend on:
-
-- ASP.NET Core
-- HTTP
-- FluentValidation
-- Angular
-- React
-- Next.js
-- Flutter
-
-Framework-specific integrations will be implemented separately.
-
-## Documentation
-
-Detailed documentation is available in:
-
-- [`docs/error-model.md`](docs/error-model.md)
-- [`docs/result.md`](docs/result.md)
-- [`docs/result-of-t.md`](docs/result-of-t.md)
-
-## Project Structure
+## Repository Structure
 
 ```text
 src/
   Behrouzan.Results/
+  Behrouzan.Results.AspNetCore/
+
+tests/
+  Behrouzan.Results.Tests/
+  Behrouzan.Results.AspNetCore.Tests/
 
 samples/
   Sample.Api/
 
-tests/
-  Behrouzan.Results.Tests/
-
 docs/
 ```
 
-## Roadmap
+Additional building blocks may be added as independent packages while remaining part of this repository.
 
-Planned Result features include:
+## Development
 
-- Unit tests
-- `Match`
-- `Map`
-- `Bind`
-- `Ensure`
-- `Tap`
-- `Combine`
+Build the solution:
 
-Future integrations may include:
+```bash
+dotnet build
+```
 
-- ASP.NET Core
-- Problem Details
-- Global exception handling
-- FluentValidation
+Run all tests:
+
+```bash
+dotnet test
+```
+
+Create NuGet packages:
+
+```bash
+dotnet pack -c Release
+```
+
+## Documentation
+
+Additional documentation is available in the [`docs`](docs) directory.
+
+Current documentation includes:
+
+- [`Error`](docs/error-model.md)
+- [`Result`](docs/result.md)
+- [`Result<T>`](docs/result-of-t.md)
 
 ## Status
 
-This project is currently under active development and its public API may change before the first stable release.
+This repository is under active development.
+
+Individual packages may have different versions and release cycles.
+
+Public APIs may change before their respective `1.0.0` releases.
 
 ## License
 

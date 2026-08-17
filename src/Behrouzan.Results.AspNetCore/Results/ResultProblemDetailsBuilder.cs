@@ -18,6 +18,13 @@ internal static class ResultProblemDetailsBuilder
     /// <param name="statusCode">
     /// The HTTP status code associated with the errors.
     /// </param>
+    /// <param name="options">
+    /// The optional HTTP result configuration used when creating the problem details.
+    /// When <see langword="null"/>, the default configuration is used.
+    /// </param>
+    /// <param name="traceId">
+    /// The optional request trace identifier to include in the problem details.
+    /// </param>
     /// <returns>
     /// A configured <see cref="ProblemDetails"/> instance.
     /// </returns>

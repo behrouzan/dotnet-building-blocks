@@ -1,16 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\Behrouzan.Results\Behrouzan.Results.csproj" />
-  </ItemGroup>
- <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+
+    <PackageId>Behrouzan.Results.AspNetCore</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Behzad Behrouzan</Authors>
+
+    <Description>
+      ASP.NET Core integration for Behrouzan.Results, with automatic Result-to-IResult conversion, Problem Details responses, structured errors, trace identifiers, and configurable HTTP status mappings.
+    </Description>
+
+    <PackageTags>
+      result;result-pattern;aspnetcore;problem-details;minimal-api;error-handling;http
+    </PackageTags>
+
+    <RepositoryUrl>https://github.com/behrouzan/dotnet-building-blocks</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Behrouzan.Results\Behrouzan.Results.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="README.md"
+        Pack="true"
+        PackagePath="\" />
+  </ItemGroup>
 
 </Project>
