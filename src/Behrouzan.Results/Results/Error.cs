@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Represents a structured application error containing a machine-readable code,
-/// human-readable message, semantic type, optional property path, severity,
+/// human-readable message, semantic type, optional property path,
 /// and additional metadata.
 /// </summary>
 public sealed record Error
@@ -31,10 +31,6 @@ public sealed record Error
     /// </remarks>
     public string? PropertyPath { get; }
 
-    /// <summary>
-    /// Gets the severity level of the error.
-    /// </summary>
-    public ErrorSeverity Severity { get; }
 
     /// <summary>
     /// Gets additional machine-readable information associated with the error.
@@ -54,7 +50,6 @@ public sealed record Error
     /// <param name="propertyPath">
     /// The optional property or input path associated with the error.
     /// </param>
-    /// <param name="severity">The severity level of the error.</param>
     /// <param name="metadata">
     /// Optional additional machine-readable information associated with the error.
     /// </param>
@@ -67,7 +62,6 @@ public sealed record Error
         string message,
         ErrorType type = ErrorType.Failure,
         string? propertyPath = null,
-        ErrorSeverity severity = ErrorSeverity.Error,
         IReadOnlyDictionary<string, object?>? metadata = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(code);
@@ -77,7 +71,6 @@ public sealed record Error
         Message = message;
         Type = type;
         PropertyPath = propertyPath;
-        Severity = severity;
 
         Metadata = metadata is null
             ? new Dictionary<string, object?>()
@@ -262,26 +255,7 @@ public sealed record Error
             Message,
             Type,
             PropertyPath,
-            Severity,
             metadata);
     }
 
-    /// <summary>
-    /// Returns a new error with the specified severity.
-    /// </summary>
-    /// <remarks>
-    /// The current instance is not modified.
-    /// </remarks>
-    /// <param name="severity">The new severity level.</param>
-    /// <returns>
-    /// A new <see cref="Error"/> with the specified severity.
-    /// </returns>
-    public Error WithSeverity(ErrorSeverity severity) =>
-        new(
-            Code,
-            Message,
-            Type,
-            PropertyPath,
-            severity,
-            Metadata);
 }

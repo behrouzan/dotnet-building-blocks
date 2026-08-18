@@ -4,6 +4,20 @@ ASP.NET Core integration for `Behrouzan.Results`.
 
 This package converts application results into ASP.NET Core HTTP responses while keeping the core Result model independent from HTTP concerns.
 
+## Features
+
+- `Result<T>` to `IResult` conversion for Minimal APIs
+- `Result<T>` to `IActionResult` conversion for controller-based APIs
+- Non-generic `Result` support
+- Automatic HTTP status code mapping
+- Problem Details responses
+- Structured error details
+- Validation error support
+- Trace identifiers
+- Configurable HTTP status mappings
+- Configurable problem type base
+- Shared response contract for Minimal APIs and controller-based APIs
+
 ## Installation
 
 ```bash
@@ -45,6 +59,70 @@ For example:
 }
 ```
 
+
+
+## Controller-based APIs
+
+For ASP.NET Core controller-based APIs, convert a result to an `IActionResult` using `ToActionResult()`.
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public sealed class ProductsController : ControllerBase
+{
+    private readonly ProductService _service;
+
+    public ProductsController(ProductService service)
+    {
+        _service = service;
+    }
+
+    [HttpGet("{id:int}")]
+    public IActionResult GetById(int id)
+    {
+        return _service
+            .GetById(id)
+            .ToActionResult();
+    }
+}
+```
+
+Successful generic results return HTTP `200` with the contained value.
+
+Failed results use the same Problem Details contract and HTTP status mapping as `ToHttpResult()`.
+
+Non-generic successful results return HTTP `204 No Content`:
+
+```csharp
+[HttpDelete("{id:int}")]
+public IActionResult Delete(int id)
+{
+    return _service
+        .Delete(id)
+        .ToActionResult();
+}
+```
+
+### Minimal API vs Controller API
+
+Use:
+
+```csharp
+result.ToHttpResult();
+```
+
+for Minimal APIs.
+
+Use:
+
+```csharp
+result.ToActionResult();
+```
+
+for controller-based APIs.
+
+Both paths use the same error mapping, Problem Details format, configuration, and trace identifier behavior.
+
 ## Failure Responses
 
 Application errors are automatically converted into Problem Details responses.
@@ -72,7 +150,6 @@ produces an HTTP `404` response similar to:
       "message": "Product was not found.",
       "type": "NotFound",
       "propertyPath": null,
-      "severity": "Error",
       "metadata": {}
     }
   ],
@@ -159,7 +236,6 @@ This preserves information such as:
 - Message
 - Error type
 - Property path
-- Severity
 - Metadata
 
 Clients can therefore process errors programmatically instead of depending only on human-readable messages.

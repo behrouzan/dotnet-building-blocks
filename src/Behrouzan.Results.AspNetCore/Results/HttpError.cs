@@ -8,5 +8,4 @@ internal sealed record HttpError(
     string Message,
     string Type,
     string? PropertyPath,
-    string Severity,
     IReadOnlyDictionary<string, object?> Metadata);

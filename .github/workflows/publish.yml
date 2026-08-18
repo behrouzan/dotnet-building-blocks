@@ -41,8 +41,9 @@ jobs:
         with:
           user: behrouzan
 
-      - name: Publish Behrouzan.Results
-        run: dotnet nuget push ./artifacts/Behrouzan.Results.0.1.0.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
-
-      - name: Publish Behrouzan.Results.AspNetCore
-        run: dotnet nuget push ./artifacts/Behrouzan.Results.AspNetCore.0.1.0.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      - name: Publish packages
+        run: >
+          dotnet nuget push "./artifacts/*.nupkg"
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate

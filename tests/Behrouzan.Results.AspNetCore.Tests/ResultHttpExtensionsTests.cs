@@ -77,9 +77,6 @@ public class ResultHttpExtensionsTests
             "NotFound",
             error.GetProperty("type").GetString());
 
-        Assert.Equal(
-            "Error",
-            error.GetProperty("severity").GetString());
 
         Assert.Equal(
             "urn:behrouzan:problem:not-found",

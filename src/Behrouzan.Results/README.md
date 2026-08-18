@@ -21,7 +21,6 @@ dotnet add package Behrouzan.Results
 - Nested property paths
 - Machine-readable error codes
 - Error types
-- Error severity
 - Custom metadata
 - Safe value access
 - `Match`

@@ -51,7 +51,6 @@ internal static class ResultProblemDetailsBuilder
             error.Message,
             error.Type.ToString(),
             error.PropertyPath,
-            error.Severity.ToString(),
             error.Metadata))
         .ToArray();
 

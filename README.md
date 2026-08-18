@@ -21,7 +21,6 @@ Key features include:
 - Validation errors
 - Property paths
 - Error codes and types
-- Error severity
 - Metadata
 - `Match`
 - `Map`

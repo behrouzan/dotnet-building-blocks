@@ -74,29 +74,6 @@ If `PropertyPath` is `null`, the error is not associated with a specific field.
 
 This allows different clients such as Angular, React, Next.js, Flutter, or other applications to map server errors to their own input fields without coupling the Core library to a specific UI framework.
 
-### Severity
-
-Represents the importance level of the error.
-
-Supported values:
-
-```text
-Error
-Warning
-Info
-```
-
-The default severity is `Error`.
-
-Example:
-
-```csharp
-var error = Error
-    .Failure(
-        "Profile.Incomplete",
-        "Your profile is incomplete.")
-    .WithSeverity(ErrorSeverity.Warning);
-```
 
 ### Metadata
 
@@ -195,7 +172,6 @@ Methods such as:
 
 ```csharp
 WithMetadata(...)
-WithSeverity(...)
 ```
 
 return a new `Error` rather than modifying the existing error.

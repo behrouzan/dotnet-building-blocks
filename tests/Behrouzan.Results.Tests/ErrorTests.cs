@@ -17,14 +17,12 @@ public class ErrorTests
             "Quantity is invalid.",
             ErrorType.Validation,
             "quantity",
-            ErrorSeverity.Warning,
             metadata);
 
         Assert.Equal("Product.Quantity.Invalid", error.Code);
         Assert.Equal("Quantity is invalid.", error.Message);
         Assert.Equal(ErrorType.Validation, error.Type);
         Assert.Equal("quantity", error.PropertyPath);
-        Assert.Equal(ErrorSeverity.Warning, error.Severity);
         Assert.Equal(1, error.Metadata["minimum"]);
     }
 
@@ -58,7 +56,6 @@ public class ErrorTests
         Assert.Equal("User.Email.Invalid", error.Code);
         Assert.Equal("Email is invalid.", error.Message);
         Assert.Equal("email", error.PropertyPath);
-        Assert.Equal(ErrorSeverity.Error, error.Severity);
         Assert.Empty(error.Metadata);
     }
 
@@ -108,25 +105,6 @@ public class ErrorTests
         Assert.Equal(original.PropertyPath, modified.PropertyPath);
     }
 
-    [Fact]
-    public void WithSeverity_ShouldReturnNewError_WithNewSeverity()
-    {
-        var original = Error.Validation(
-            "User.Email.Invalid",
-            "Email is invalid.",
-            "email");
-
-        var modified = original.WithSeverity(
-            ErrorSeverity.Warning);
-
-        Assert.Equal(ErrorSeverity.Error, original.Severity);
-        Assert.Equal(ErrorSeverity.Warning, modified.Severity);
-
-        Assert.Equal(original.Code, modified.Code);
-        Assert.Equal(original.Message, modified.Message);
-        Assert.Equal(original.Type, modified.Type);
-        Assert.Equal(original.PropertyPath, modified.PropertyPath);
-    }
 
     [Fact]
     public void WithMetadata_WithExistingKey_ShouldReplaceValue()
