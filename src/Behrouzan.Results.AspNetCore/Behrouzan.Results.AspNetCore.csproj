@@ -11,11 +11,11 @@
     <Authors>Behzad Behrouzan</Authors>
 
     <Description>
-      ASP.NET Core integration for Behrouzan.Results, with automatic Result-to-IResult conversion, Problem Details responses, structured errors, trace identifiers, and configurable HTTP status mappings.
+      ASP.NET Core integration for Behrouzan.Results, with Result-to-IResult and Result-to-IActionResult conversion, Problem Details responses, structured errors, trace identifiers, and configurable HTTP status mappings.
     </Description>
 
     <PackageTags>
-      result;result-pattern;aspnetcore;problem-details;minimal-api;error-handling;http
+      result;result-pattern;aspnetcore;problem-details;minimal-api;controller;error-handling;http
     </PackageTags>
 
     <RepositoryUrl>https://github.com/behrouzan/dotnet-building-blocks</RepositoryUrl>
