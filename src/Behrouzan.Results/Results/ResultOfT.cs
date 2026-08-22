@@ -201,6 +201,38 @@ public sealed class Result<T> : Result
     }
 
     /// <summary>
+    /// Asynchronously transforms the value of a successful result into a new value.
+    /// </summary>
+    /// <typeparam name="TNewValue">
+    /// The type of the transformed value.
+    /// </typeparam>
+    /// <param name="mapper">
+    /// The asynchronous function used to transform the successful value.
+    /// </param>
+    /// <returns>
+    /// A task containing a <see cref="Result{TNewValue}"/> with the transformed value
+    /// when successful, or the existing errors when failed.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="mapper"/> is <see langword="null"/>.
+    /// </exception>
+    public async Task<Result<TNewValue>> MapAsync<TNewValue>(
+        Func<T, Task<TNewValue>> mapper)
+    {
+        ArgumentNullException.ThrowIfNull(mapper);
+
+        if (IsFailure)
+        {
+            return Result<TNewValue>.Failure(Errors);
+        }
+
+        var value =
+            await mapper(Value);
+
+        return Result<TNewValue>.Success(value);
+    }
+
+    /// <summary>
     /// Chains the current successful result to another operation that returns a result.
     /// </summary>
     /// <typeparam name="TNewValue">
@@ -234,5 +266,130 @@ public sealed class Result<T> : Result
         return result
             ?? throw new InvalidOperationException(
                 "The binder function cannot return null.");
+    }
+
+    /// <summary>
+    /// Asynchronously chains the current successful result to another operation
+    /// that returns a result.
+    /// </summary>
+    /// <typeparam name="TNewValue">
+    /// The type of value returned by the next operation.
+    /// </typeparam>
+    /// <param name="binder">
+    /// The asynchronous function executed when the current result is successful.
+    /// </param>
+    /// <returns>
+    /// A task containing the result returned by <paramref name="binder"/>
+    /// when successful, or a failed result containing the existing errors.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="binder"/> is <see langword="null"/>.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <paramref name="binder"/> returns <see langword="null"/>.
+    /// </exception>
+    public async Task<Result<TNewValue>> BindAsync<TNewValue>(
+        Func<T, Task<Result<TNewValue>>> binder)
+    {
+        ArgumentNullException.ThrowIfNull(binder);
+
+        if (IsFailure)
+        {
+            return Result<TNewValue>.Failure(Errors);
+        }
+
+        var result =
+            await binder(Value);
+
+        return result
+            ?? throw new InvalidOperationException(
+                "The binder function cannot return null.");
+    }
+
+    /// <summary>
+    /// Ensures that the value of a successful result satisfies the specified condition.
+    /// </summary>
+    /// <param name="predicate">
+    /// The condition that the successful value must satisfy.
+    /// </param>
+    /// <param name="error">
+    /// The error returned when the condition is not satisfied.
+    /// </param>
+    /// <returns>
+    /// The current successful result when the condition is satisfied,
+    /// the specified failure when it is not satisfied,
+    /// or the existing failure when the current result has already failed.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="predicate"/> or
+    /// <paramref name="error"/> is <see langword="null"/>.
+    /// </exception>
+    public Result<T> Ensure(
+        Func<T, bool> predicate,
+        Error error)
+    {
+        ArgumentNullException.ThrowIfNull(predicate);
+        ArgumentNullException.ThrowIfNull(error);
+
+        if (IsFailure)
+        {
+            return this;
+        }
+
+        return predicate(Value)
+            ? this
+            : Result<T>.Failure(error);
+    }
+
+    /// <summary>
+    /// Executes an action using the value of a successful result
+    /// without changing the result.
+    /// </summary>
+    /// <param name="action">
+    /// The action to execute when the result is successful.
+    /// </param>
+    /// <returns>
+    /// The current result unchanged.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="action"/> is <see langword="null"/>.
+    /// </exception>
+    public Result<T> Tap(
+        Action<T> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        if (IsSuccess)
+        {
+            action(Value);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Asynchronously executes an action using the value of a successful result
+    /// without changing the result.
+    /// </summary>
+    /// <param name="action">
+    /// The asynchronous action to execute when the result is successful.
+    /// </param>
+    /// <returns>
+    /// A task containing the current result unchanged.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="action"/> is <see langword="null"/>.
+    /// </exception>
+    public async Task<Result<T>> TapAsync(
+        Func<T, Task> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        if (IsSuccess)
+        {
+            await action(Value);
+        }
+
+        return this;
     }
 }

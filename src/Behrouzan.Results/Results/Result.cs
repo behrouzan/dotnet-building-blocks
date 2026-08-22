@@ -178,7 +178,7 @@ public class Result
         params Result[] results)
     {
         ArgumentNullException.ThrowIfNull(results);
-        
+
         if (results.Any(result => result is null))
         {
             throw new ArgumentException(

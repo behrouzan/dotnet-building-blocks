@@ -24,8 +24,11 @@ dotnet add package Behrouzan.Results
 - Custom metadata
 - Safe value access
 - `Match`
-- `Map`
-- `Bind`
+- `Map` and `MapAsync`
+- `Bind` and `BindAsync`
+- Async composition over `Task<Result<T>>`
+- `Ensure`
+- `Tap` and `TapAsync`
 - `Combine`
 
 ## Basic Usage
@@ -148,6 +151,26 @@ var dtoResult = productResult.Map(
 
 When the original result has failed, the mapper is not executed and the existing errors are propagated.
 
+## MapAsync
+
+Asynchronously transform the value of a successful result:
+
+```csharp
+var dtoResult = await productResult.MapAsync(
+    async product =>
+    {
+        var category =
+            await categoryService.GetAsync(product.CategoryId);
+
+        return new ProductDto(
+            product.Id,
+            product.Name,
+            category.Name);
+    });
+```
+
+When the original result has failed, the mapper is not executed and the existing errors are propagated.
+
 ## Bind
 
 Chain operations that themselves return results:
@@ -158,6 +181,93 @@ var orderResult = productResult.Bind(
 ```
 
 When the original result has failed, the next operation is not executed.
+
+## BindAsync
+
+Chain asynchronous operations that themselves return results:
+
+```csharp
+var orderResult = await productResult.BindAsync(
+    async product =>
+        await CreateOrderAsync(product));
+```
+
+When the original result has failed, the next operation is not executed and the existing errors are propagated.
+
+## Async Composition
+
+Operations can also be chained directly from `Task<Result<T>>`.
+
+This avoids repeatedly awaiting intermediate results:
+
+```csharp
+var result = await GetProductAsync(id)
+    .Ensure(
+        product => product.Stock > 0,
+        Error.Conflict(
+            "Product.OutOfStock",
+            "Product is out of stock."))
+    .Map(product =>
+        $"{product.Name} is available.");
+```
+
+Both synchronous and asynchronous operations can participate in an asynchronous chain:
+
+```csharp
+var result = await GetProductAsync(id)
+    .BindAsync(async product =>
+        await CreateOrderAsync(product))
+    .Map(order =>
+        order.Id);
+```
+
+## Ensure
+
+Validate a successful value without leaving the result pipeline:
+
+```csharp
+var result = productResult.Ensure(
+    product => product.Stock > 0,
+    Error.Conflict(
+        "Product.OutOfStock",
+        "Product is out of stock."));
+```
+
+If the result has already failed, the predicate is not evaluated.
+
+If the predicate returns `false`, the result becomes a failure containing the specified error.
+
+## Tap
+
+Execute a side effect for a successful result without changing its value:
+
+```csharp
+var result = productResult
+    .Tap(product =>
+        logger.LogInformation(
+            "Processing product {ProductId}.",
+            product.Id))
+    .Map(product =>
+        product.Name);
+```
+
+`Tap` is useful for side effects such as logging, metrics, telemetry, and other operations that should not transform the result value.
+
+The action is not executed when the result has failed.
+
+## TapAsync
+
+Asynchronous side effects are supported with `TapAsync`:
+
+```csharp
+var result = await GetProductAsync(id)
+    .TapAsync(async product =>
+        await auditService.RecordAsync(product.Id))
+    .Map(product =>
+        product.Name);
+```
+
+Exceptions thrown by `Tap` or `TapAsync` actions are not converted into result failures. They propagate normally to the caller.
 
 ## Combine
 

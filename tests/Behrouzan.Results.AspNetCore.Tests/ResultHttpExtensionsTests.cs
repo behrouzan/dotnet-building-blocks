@@ -18,7 +18,7 @@ public class ResultHttpExtensionsTests
                 "Product was not found."));
 
         var context = CreateHttpContext();
- 
+
         var httpResult = result.ToHttpResult();
 
         await httpResult.ExecuteAsync(context);
@@ -27,7 +27,7 @@ public class ResultHttpExtensionsTests
             StatusCodes.Status404NotFound,
             context.Response.StatusCode);
 
-            context.Response.Body.Position = 0;
+        context.Response.Body.Position = 0;
 
         using var reader = new StreamReader(context.Response.Body);
 
@@ -49,7 +49,7 @@ public class ResultHttpExtensionsTests
             "Product was not found.",
             root.GetProperty("detail").GetString());
 
-        
+
         var errors = root.GetProperty("errors");
 
         Assert.Equal(

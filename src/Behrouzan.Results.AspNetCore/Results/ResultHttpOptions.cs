@@ -101,10 +101,10 @@ public sealed class ResultHttpOptions
         foreach (var statusCode in _statusCodes.Values)
         {
             if (statusCode < 100 || statusCode > 599)
-            {
-                throw new InvalidOperationException(
-                    $"HTTP status code '{statusCode}' is invalid.");
-            }
+                                {
+                                    throw new InvalidOperationException(
+                                        $"HTTP status code '{statusCode}' is invalid.");
+                                }
         }
     }
 

@@ -167,10 +167,6 @@ DeactivateUser
 PublishArticle
 ```
 
-## Expected Failures vs Exceptions
-
-`Result` is primarily intended for expected application failures.
-
 ## Combining Results
 
 Multiple results can be combined into a single result using `Result.Combine`.
@@ -239,19 +235,21 @@ var result = Result.Combine();
 returns a successful result because there are no failed results to combine.
 
 
+## Expected Failures vs Exceptions
+
+`Result` is primarily intended for expected application failures.
+
 Examples:
 
-```text
 Validation failure
 Resource not found
 Business rule violation
 Conflict
 Unauthorized operation
 Forbidden operation
-```
 
-Unexpected failures such as programming bugs or unexpected infrastructure exceptions do not automatically become `Result.Failure`.
+Unexpected failures such as programming bugs or unexpected infrastructure exceptions do not automatically become Result.Failure.
 
 For example, a database operation may throw an exception if the database becomes unavailable.
 
-Exception handling and conversion to HTTP responses will be handled separately by the ASP.NET Core integration layer.
+Exception handling can be handled separately by higher application layers, such as the ASP.NET Core integration

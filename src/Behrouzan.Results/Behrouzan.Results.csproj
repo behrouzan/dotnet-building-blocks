@@ -7,10 +7,10 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
     <PackageId>Behrouzan.Results</PackageId>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <Authors>Behzad Behrouzan</Authors>
     <Description>
-      A lightweight, framework-independent Result pattern library for .NET with structured errors, multiple error support, metadata, mapping, binding, matching, and result composition.
+      A lightweight, framework-independent Result pattern library for .NET with structured errors, result composition, synchronous and asynchronous mapping and binding, validation guards, side-effect helpers, and task-based pipelines.
     </Description>
     <PackageTags>
       result;result-pattern;error-handling;functional;validation;dotnet

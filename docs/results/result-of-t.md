@@ -232,6 +232,44 @@ The resulting `Result<int>` remains a failure and contains the same errors.
 
 Passing a `null` mapper is not allowed and throws an `ArgumentNullException`.
 
+## MapAsync
+
+`MapAsync` is the asynchronous counterpart of `Map`.
+
+It transforms the value of a successful `Result<T>` using an asynchronous operation.
+
+Conceptually:
+
+```text
+Result<T>
+   |
+   | MapAsync(T -> Task<TNewValue>)
+   v
+Task<Result<TNewValue>>
+```
+
+Example:
+
+```csharp
+Result<Product> result = GetProduct();
+
+var dtoResult = await result.MapAsync(
+    async product =>
+    {
+        var category =
+            await categoryService.GetAsync(product.CategoryId);
+
+        return new ProductDto(
+            product.Id,
+            product.Name,
+            category.Name);
+    });
+```
+
+If the original result is a failure, the asynchronous mapper is not executed and the existing errors are preserved.
+
+Passing a `null` mapper is not allowed and throws an `ArgumentNullException`.
+
 ## Bind
 
 `Bind` chains a successful `Result<T>` to another operation that itself returns a `Result`.
@@ -300,6 +338,222 @@ return userResult.Bind(
 ```
 
 Passing a `null` binder is not allowed and throws an `ArgumentNullException`.
+
+## BindAsync
+
+`BindAsync` is the asynchronous counterpart of `Bind`.
+
+It chains a successful `Result<T>` to an asynchronous operation that itself returns a result.
+
+Conceptually:
+
+```text
+Result<T>
+   |
+   | BindAsync(T -> Task<Result<TNewValue>>)
+   v
+Task<Result<TNewValue>>
+```
+
+Example:
+
+```csharp
+Result<Product> result = GetProduct();
+
+var orderResult = await result.BindAsync(
+    async product =>
+        await CreateOrderAsync(product));
+```
+
+If the original result is successful, the asynchronous binder is executed.
+
+If the original result is a failure, the binder is not executed and the existing errors are preserved.
+
+Passing a `null` binder is not allowed and throws an `ArgumentNullException`.
+
+If the binder returns `null`, an `InvalidOperationException` is thrown.
+
+## Ensure
+
+`Ensure` validates the value of a successful `Result<T>` using a predicate.
+
+It is useful when an operation has already succeeded, but the returned value must satisfy an additional condition before the pipeline can continue.
+
+Conceptually:
+
+```text
+Result<T>
+   |
+   | Ensure(T -> bool)
+   |
+   ├── true  -> original Result<T>
+   |
+   └── false -> Failure<T>
+```
+
+Example:
+
+```csharp
+var result = productResult.Ensure(
+    product => product.Stock > 0,
+    Error.Conflict(
+        "Product.OutOfStock",
+        "Product is out of stock."));
+```
+
+If the original result is successful and the predicate returns `true`, the original successful result is returned unchanged.
+
+If the predicate returns `false`, a failed `Result<T>` containing the specified error is returned.
+
+If the original result has already failed, the predicate is not executed and the existing errors are preserved.
+
+Passing a `null` predicate or error is not allowed and throws an `ArgumentNullException`.
+
+## Tap
+
+`Tap` executes a side effect using the value of a successful `Result<T>` without changing the result itself.
+
+It is useful for operations such as logging, metrics, telemetry, or other side effects that should not transform the result value.
+
+Conceptually:
+
+```text
+Result<T>
+   |
+   | Tap(T -> void)
+   v
+Result<T>
+```
+
+Example:
+
+```csharp
+var result = productResult.Tap(
+    product =>
+        logger.LogInformation(
+            "Processing product {ProductId}.",
+            product.Id));
+```
+
+If the result is successful, the action is executed and the original result is returned unchanged.
+
+If the result has failed, the action is not executed and the existing failure is returned unchanged.
+
+Passing a `null` action is not allowed and throws an `ArgumentNullException`.
+
+Exceptions thrown by the action are not converted into result failures. They propagate normally to the caller.
+
+## TapAsync
+
+`TapAsync` is the asynchronous counterpart of `Tap`.
+
+It executes an asynchronous side effect without changing the successful result value.
+
+Conceptually:
+
+```text
+Result<T>
+   |
+   | TapAsync(T -> Task)
+   v
+Task<Result<T>>
+```
+
+Example:
+
+```csharp
+var result = await productResult.TapAsync(
+    async product =>
+        await auditService.RecordAsync(product.Id));
+```
+
+If the result is successful, the asynchronous action is executed and the original result is returned unchanged.
+
+If the result has failed, the action is not executed and the existing failure is preserved.
+
+Passing a `null` action is not allowed and throws an `ArgumentNullException`.
+
+Exceptions thrown by the asynchronous action are not converted into result failures. They propagate normally to the caller.
+
+## Async Composition
+
+`Task<Result<T>>` can be composed directly using result operations without manually awaiting every intermediate step.
+
+This is useful when the operation that starts a result pipeline is asynchronous.
+
+Instead of writing:
+
+```csharp
+var result = await GetProductAsync(id);
+
+if (result.IsFailure)
+{
+    return Result<string>.Failure(result.Errors);
+}
+
+var ensured = result.Ensure(
+    product => product.Stock > 0,
+    Error.Conflict(
+        "Product.OutOfStock",
+        "Product is out of stock."));
+
+if (ensured.IsFailure)
+{
+    return Result<string>.Failure(ensured.Errors);
+}
+
+return ensured.Map(
+    product =>
+        $"{product.Name} is available.");
+```
+
+the same flow can be composed directly:
+
+```csharp
+return await GetProductAsync(id)
+    .Ensure(
+        product => product.Stock > 0,
+        Error.Conflict(
+            "Product.OutOfStock",
+            "Product is out of stock."))
+    .Map(
+        product =>
+            $"{product.Name} is available.");
+```
+
+The following operations can be used directly with `Task<Result<T>>`:
+
+- `Map`
+- `MapAsync`
+- `Bind`
+- `BindAsync`
+- `Ensure`
+- `Tap`
+- `TapAsync`
+
+Synchronous and asynchronous operations can be mixed in the same pipeline.
+
+For example:
+
+```csharp
+return await GetProductAsync(id)
+    .Ensure(
+        product => product.Stock > 0,
+        Error.Conflict(
+            "Product.OutOfStock",
+            "Product is out of stock."))
+    .Tap(product =>
+        logger.LogInformation(
+            "Product {ProductId} is available.",
+            product.Id))
+    .TapAsync(async product =>
+        await auditService.RecordAsync(product.Id))
+    .Map(
+        product =>
+            $"{product.Name} is available for ordering.");
+```
+
+If any result in the pipeline is a failure, subsequent operations that require a successful value are skipped and the existing errors are propagated.
 
 ## Complete Example
 

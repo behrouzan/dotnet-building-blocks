@@ -44,7 +44,7 @@ internal static class ResultProblemDetailsBuilder
         }
 
         options ??= new ResultHttpOptions();
-        
+
         var httpErrors = errors
         .Select(error => new HttpError(
             error.Code,
@@ -65,7 +65,7 @@ internal static class ResultProblemDetailsBuilder
         };
 
         problemDetails.Extensions["errors"] = httpErrors;
-        
+
         if (!string.IsNullOrWhiteSpace(traceId))
         {
             problemDetails.Extensions["traceId"] = traceId;
